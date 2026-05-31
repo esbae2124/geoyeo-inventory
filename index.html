@@ -140,64 +140,64 @@ body.is-locked .photo-input-group, body.is-locked .add-item-btn, body.is-locked 
 .modal-index {position:absolute;bottom:24px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.7);font-size:12px;font-weight:500;background:rgba(0,0,0,0.5);padding:4px 12px;border-radius:12px;z-index:2050}
 .modal-zoom-hint {position:absolute;top:24px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.5);font-size:11px;z-index:2050;background:rgba(255,255,255,0.08);padding:3px 10px;border-radius:6px;pointer-events:none}
 
-/* 🌟 [수정 포인트 1] 비품 레이아웃 칼정렬 수술대 */
-.items-header{
-  display:flex;
-  font-size:11px;
-  color:var(--text3);
-  padding:0 4px;
-  margin-bottom:6px;
-  gap:6px;
-  align-items:center;
-  width:100%;
-}
-/* 헤더 글자 칸 비율을 %로 자를 대고 똑바로 고정 */
-.items-header .ih-name{ width: 44% !important; text-align:left; flex-shrink:0; }
-.items-header .ih-num { width: 16% !important; text-align:center; flex-shrink:0; }
-.items-header .ih-note{ width: 28% !important; text-align:left; flex-shrink:0; }
-.items-header .ih-del { width: 12% !important; text-align:center; flex-shrink:0; }
+/* 📊 비품 헤더와 입력창 전체 좌측 정렬 및 수직 일치 규칙 */
 
-.item-row{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  margin-bottom:8px;
-  width:100%;
+.items-header {
+  display: flex;
+  font-size: 11px;
+  color: var(--text3);
+  padding: 0 6px;   /* 💡 입력창 박스 내부 여백과 일치하도록 헤더 패딩 조정 */
+  margin-bottom: 6px;
+  gap: 6px;
+  align-items: center;
+  width: 100%;
 }
-/* 인풋 창들이 부모 칸을 탈출하지 못하도록 box-sizing 및 너비 비율 맞춤 */
-.item-input{
-  font-size:12px;
-  padding:5px 6px;
-  border:1px solid var(--border);
-  border-radius:6px;
-  background:var(--bg);
-  color:var(--text);
-  outline:none;
-  min-width:0;
-  box-sizing:border-box !important;
-}
-.item-input:focus{border-color:var(--accent)}
+/* width 대신 flex 비율로 공간 분할 (물품명 4.5 : 개수 1.5 : 비고 2.8 : 삭제 1.2) */
+.items-header .ih-name { flex: 4.5 !important; text-align: left; }
+.items-header .ih-num  { flex: 1.5 !important; text-align: left; } /* 👈 개수 제목도 좌측 정렬! */
+.items-header .ih-note { flex: 2.8 !important; text-align: left; }
+.items-header .ih-del  { flex: 1.2 !important; text-align: center; }
 
-/* 🌟 [수정 포인트 2] 아래 인풋창들의 너비를 위쪽 헤더 비율과 100% 일치시킴 */
-.item-input.name{ width: 44% !important; flex-shrink:0; }
-.item-input.num { width: 16% !important; text-align:center; padding:5px 2px; flex-shrink:0; }
-.item-input.note{ width: 28% !important; flex-shrink:0; }
-
-.del-btn{
-  width: 12% !important; /* 🗑️ 버튼 너비도 상단 헤더칸과 정확하게 매칭 */
-  height:26px;
-  background:none;
-  border:none;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:6px;
-  flex-shrink:0;
-  padding:0;
-  font-size:12px;
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  width: 100%;
 }
-.del-btn:hover{background:var(--danger-light);box-shadow: 0 0 0 1px #F7C1C1}
+.item-input {
+  font-size: 12px;
+  padding: 5px 6px; /* 💡 좌측 패딩 6px 고정 */
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  min-width: 0;
+  box-sizing: border-box !important;
+}
+.item-input:focus { border-color: var(--accent); }
+
+/* 🌟 입력창 flex 비율을 상단 헤더와 100% 똑같이 매칭 */
+.item-input.name { flex: 4.5 !important; text-align: left; }
+.item-input.num  { flex: 1.5 !important; text-align: left; } /* 👈 개수 입력창도 똑같이 좌측 정렬! */
+.item-input.note { flex: 2.8 !important; text-align: left; }
+
+.del-btn {
+  flex: 1.2 !important;
+  height: 26px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  flex-shrink: 0;
+  padding: 0;
+  font-size: 12px;
+}
+.del-btn:hover { background: var(--danger-light); box-shadow: 0 0 0 1px #F7C1C1; }
 
 .add-item-btn{width:100%;padding:7px;font-size:12px;color:var(--accent);background:none;border:1px dashed var(--accent-mid);border-radius:6px;cursor:pointer;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:4px}
 .add-item-btn:hover{background:var(--accent-light)}
