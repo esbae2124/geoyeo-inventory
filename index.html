@@ -58,6 +58,12 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
 .btn.danger{color:var(--danger);border-color:#F7C1C1}
 .btn.danger:hover{background:var(--danger-light)}
+.btn.success{color:var(--success);border-color:#C1F7E4}
+.btn.success:hover{background:var(--success-light)}
+
+/* 상단 잠금 해제 상태 안내용 뱃지 스타일 */
+.lock-badge {font-size:11px;font-weight:600;padding:4px 8px;border-radius:6px;background:var(--surface2);color:var(--text2);display:flex;align-items:center;gap:4px}
+.lock-badge.unlocked {background:var(--success-light);color:var(--success)}
 
 .floor-layout{display:grid;grid-template-columns:1fr 290px;gap:16px;align-items:start}
 
@@ -74,6 +80,10 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .room.dragging{opacity:0.75;cursor:grabbing;z-index:50}
 .room-name{font-size:10px;font-weight:600;color:var(--accent-dark);line-height:1.1;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
 .room-badge{font-size:8px;color:var(--accent);background:var(--accent-light);padding:0px 4px;border-radius:8px;margin-top:1px;pointer-events:none;transform:scale(0.9)}
+
+/* 잠금 상태일 때 도면 조작 불가용 마우스 커서 지정 */
+body.is-locked .room {cursor:default}
+
 .resize-handle{position:absolute;width:12px;height:12px;background:var(--accent);border-radius:3px;opacity:0;transition:opacity 0.15s;z-index:10}
 .resize-handle::after{content:'';position:absolute;inset:3px;border-right:1.5px solid #fff;border-bottom:1.5px solid #fff}
 .resize-handle.se{bottom:1px;right:1px;cursor:se-resize}
@@ -81,6 +91,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .resize-handle.ne{top:1px;right:1px;cursor:ne-resize;transform:scaleY(-1)}
 .resize-handle.nw{top:1px;left:1px;cursor:nw-resize;transform:scale(-1)}
 .room.selected .resize-handle{opacity:1}
+body.is-locked .resize-handle {display:none !important}
 
 .resize-guide {position:absolute;border:2px dashed var(--accent-dark);background:rgba(83,74,183,0.1);border-radius:6px;pointer-events:none;z-index:60;display:none}
 
@@ -110,12 +121,14 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .photo-thumb-del {position:absolute;top:0;right:0;background:rgba(226,75,74,0.85);color:#fff;width:16px;height:16px;font-size:10px;display:flex;align-items:center;justify-content:center;border-bottom-left-radius:4px;border:none;cursor:pointer}
 .photo-thumb-del:hover {background:var(--danger)}
 
-/* ★ 확대/축소 스크롤 줌 렉 방지를 위한 모달 배경 및 컨테이너 스타일 고도화 ★ */
+/* 잠금 상태일 때 인풋창 비활성화용 제어 배경색 */
+body.is-locked .name-input, body.is-locked .desc-textarea, body.is-locked .photo-input, body.is-locked .item-input {background:#F2F0FA;color:#7F77DD;cursor:not-allowed}
+body.is-locked .photo-input-group, body.is-locked .add-item-btn, body.is-locked .photo-thumb-del, body.is-locked .del-btn {display:none !important}
+
 .photo-modal {position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:2000;display:none;align-items:center;justify-content:center;user-select:none;overflow:hidden}
 .modal-close {position:absolute;top:16px;right:16px;color:#fff;font-size:32px;background:none;border:none;cursor:pointer;z-index:2100}
 .modal-content-wrap {position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
 
-/* 이미지가 모달 내 영역을 벗어나서 스크롤 확대되도록 컨테이너와 커서 커스텀 적용 */
 .modal-img-viewport {width:85%;height:85%;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
 .modal-img {max-width:100%;max-height:100%;border-radius:4px;box-shadow:0 8px 32px rgba(0,0,0,0.6);object-fit:contain;position:absolute;transform-origin:center center;cursor:grab;transition:transform 0.05s ease-out}
 .modal-img:active {cursor:grabbing}
@@ -125,7 +138,6 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:0
 .modal-btn.prev {left:24px}
 .modal-btn.next {right:24px}
 .modal-index {position:absolute;bottom:24px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.7);font-size:12px;font-weight:500;background:rgba(0,0,0,0.5);padding:4px 12px;border-radius:12px;z-index:2050}
-/* 스크롤 가이드 안내 뱃지 */
 .modal-zoom-hint {position:absolute;top:24px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.5);font-size:11px;z-index:2050;background:rgba(255,255,255,0.08);padding:3px 10px;border-radius:6px;pointer-events:none}
 
 .items-header{display:flex;font-size:11px;color:var(--text3);padding:0 2px;margin-bottom:4px;gap:4px;align-items:center}
@@ -179,7 +191,7 @@ tbody tr:hover td{background:var(--bg)}
 }
 </style>
 </head>
-<body>
+<body class="is-locked">
 
 <header>
   <div class="logo">
@@ -188,9 +200,7 @@ tbody tr:hover td{background:var(--bg)}
     <span class="header-subtitle">Building Inventory</span>
   </div>
   <div class="header-right">
-    <button class="btn" onclick="resetData()" title="초기화" style="color:var(--danger);border-color:#F7C1C1">
-      🔄 초기화
-    </button>
+    <button class="btn" id="lock-toggle-btn" onclick="toggleLockMode()">🔒 편집 잠금</button>
     <button class="btn primary" onclick="exportExcel()">
       📥 엑셀
     </button>
@@ -216,7 +226,7 @@ tbody tr:hover td{background:var(--bg)}
         <option value="F2">2 지상 2층</option>
         <option value="F3">3 지상 3층</option>
       </select>
-      <button class="btn" onclick="addRoom()">➕ 공간 추가</button>
+      <button class="btn" id="add-room-btn" onclick="addRoom()" style="display:none">➕ 공간 추가</button>
       <button class="btn danger" onclick="deleteRoom()" id="del-room-btn" style="display:none">
         🗑️ 공간 삭제
       </button>
@@ -227,7 +237,8 @@ tbody tr:hover td{background:var(--bg)}
         <div class="canvas-header">
           <span style="font-size:13px">📍</span>
           <span class="canvas-header-title" id="floor-title">지상 1층</span>
-          <span class="canvas-header-hint">— 클릭하여 관리 (Ctrl+드래그시 복사)</span><span id="save-indicator" style="margin-left:auto;font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px">💾 연결 중...</span>
+          <span class="canvas-header-hint" id="canvas-hint">— 🔒 현재 조회 모드입니다. (수정하려면 잠금을 해제하세요)</span>
+          <span id="save-indicator" style="margin-left:auto;font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px">💾 연결 중...</span>
         </div>
         <div class="floor-canvas" id="floor-canvas">
           <div class="canvas-grid"></div>
@@ -269,22 +280,26 @@ tbody tr:hover td{background:var(--bg)}
 </div>
 
 <div class="photo-modal" id="photo-modal">
-  <button class="modal-close" onclick="closePhotoModal()">&times;</button>
+  <button class="modal-close" onclick="closePhotoModal()">×</button>
   <div class="modal-zoom-hint">🖱️ 마우스 휠: 확대/축소  |  🖐️ 드래그: 사진 이동</div>
   <div class="modal-content-wrap">
-    <button class="modal-btn prev" onclick="moveModalPhoto(-1)">&#10094;</button>
+    <button class="modal-btn prev" onclick="moveModalPhoto(-1)">❮</button>
     <div class="modal-img-viewport" id="modal-img-viewport">
       <img src="" class="modal-img" id="modal-img">
     </div>
-    <button class="modal-btn next" onclick="moveModalPhoto(1)">&#10095;</button>
+    <button class="modal-btn next" onclick="moveModalPhoto(1)">❯</button>
     <div class="modal-index" id="modal-index">1 / 1</div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
-// ★★★여기에 본인의 구글 앱스 스크립트 배포 주소를 붙여넣으세요★★★
+// ★ 회원님의 구글 웹 앱 직통 주소 원천 탑재 완료! ★
 const API_URL = "https://script.google.com/macros/s/AKfycbzQNEwgS_QGHWpcuE_4LEPaB8gEb0USTHL6kyF5K6taCUl_3l9Ot4CiMf06avd19SoBxQ/exec";
+
+// ★ [보안 규칙] 관리자용 전용 암호 키값 지정 ★
+const ADMIN_PASSWORD = "geoyeo1234"; 
+let isLockedMode = true; // 최초 상태는 읽기 전용 모드
 
 const FLOOR_NAMES={F0:'마당(주차장)',B1:'지하 1층',F1:'지상 1층',F2:'지상 2층',F3:'지상 3층'};
 const FLOOR_ORDER=['F0','B1','F1','F2','F3'];
@@ -294,7 +309,6 @@ let selectedRoom=null;
 let modalPhotos = [];
 let modalCurrentIdx = 0;
 
-// ★ 실시간 사진 줌인/줌아웃 및 드래그 트래킹 상태 제어용 변수 생성 ★
 let imgScale = 1;
 let imgPanX = 0;
 let imgPanY = 0;
@@ -307,7 +321,40 @@ const defaultData={F0:[],B1:[],F1:[],F2:[],F3:[]};
 let data = {};
 let saveTimeout = null;
 
+// 암호 일치 여부를 판별해서 잠금/해제 전환해주는 마법 함수
+function toggleLockMode() {
+  if (isLockedMode) {
+    const userInput = prompt("🔓 편집 모드로 전환합니다.\n관리자 비밀번호를 입력해 주세요:");
+    if (userInput === ADMIN_PASSWORD) {
+      isLockedMode = false;
+      document.body.classList.remove('is-locked');
+      document.getElementById('lock-toggle-btn').className = "btn success";
+      document.getElementById('lock-toggle-btn').innerHTML = "🔓 편집 중...";
+      document.getElementById('canvas-hint').textContent = "— 드래그하여 배치 수정 가능 (Ctrl+드래그시 복사)";
+      document.getElementById('add-room-btn').style.display = "inline-block";
+      if (selectedRoom) document.getElementById('del-room-btn').style.display = "flex";
+      alert("✅ 인증되었습니다. 이제 자유롭게 수정할 수 있습니다.");
+    } else if (userInput !== null) {
+      alert("❌ 비밀번호가 틀렸습니다. 조회가 차단 해제되지 않습니다.");
+    }
+  } else {
+    // 다시 잠금 모드로 회귀 처리
+    isLockedMode = true;
+    document.body.classList.add('is-locked');
+    document.getElementById('lock-toggle-btn').className = "btn";
+    document.getElementById('lock-toggle-btn').innerHTML = "🔒 편집 잠금";
+    document.getElementById('canvas-hint').textContent = "— 🔒 현재 조회 모드입니다. (수정하려면 잠금을 해제하세요)";
+    document.getElementById('add-room-btn').style.display = "none";
+    document.getElementById('del-room-btn').style.display = "none";
+    alert("🔒 다시 안전하게 조회 전용 모드로 잠갔습니다.");
+  }
+  renderFloor(); renderPanel();
+}
+
 function saveData(){
+  // 잠겨있을 때는 구글 시트로의 어떠한 유령 저장 신호 송출도 원천 차단시킴
+  if(isLockedMode) return;
+  
   const ind=document.getElementById('save-indicator');
   if(ind){ ind.style.color='var(--text2)'; ind.innerHTML='🔄 저장 중...'; }
   if(saveTimeout) clearTimeout(saveTimeout);
@@ -348,7 +395,7 @@ function loadData(){
     });
 }
 
-function h(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function h(s){return String(s||'').replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>').replace(/"/g,'"')}
 
 function changeFloor(){
   currentFloor=document.getElementById('floor-select').value;
@@ -391,6 +438,12 @@ function attachRoomEvents(el, roomId){
     e.stopPropagation();
     const room = getRoom(roomId);
     if(!room) return;
+
+    // 조회 모드일 때는 방 선택만 가능하고 드래그나 리사이즈 관련 연산 연동을 강제로 튕겨버림
+    if(isLockedMode) {
+      selectRoom(roomId);
+      return;
+    }
 
     if(e.target.classList.contains('resize-handle')){
       e.stopPropagation(); e.preventDefault();
@@ -450,6 +503,10 @@ function attachRoomEvents(el, roomId){
 
   el.addEventListener('touchstart', e=>{
     e.stopPropagation();
+    if(isLockedMode) {
+      selectRoom(roomId);
+      return;
+    }
     if(e.target.classList.contains('resize-handle')) return;
     const touch = e.touches[0];
     const canvas=document.getElementById('floor-canvas');
@@ -535,7 +592,7 @@ function selectRoom(id){
   const rooms=data[currentFloor]||[];
   selectedRoom=rooms.find(r=>r.id===id)||null;
   const delBtn = document.getElementById('del-room-btn');
-  if(delBtn) delBtn.style.display=selectedRoom?'flex':'none';
+  if(delBtn) delBtn.style.display=(selectedRoom && !isLockedMode)?'flex':'none';
   renderFloor();renderPanel();
 }
 
@@ -580,6 +637,7 @@ function renderPanel(){
   body.appendChild(sl1);
   const nameIn=document.createElement('input');
   nameIn.className='name-input';nameIn.type='text';nameIn.value=r.name;nameIn.placeholder='공간명 입력';
+  if(isLockedMode) nameIn.disabled = true; // 읽기 전용 상태일 때 태그 락 처리
   nameIn.addEventListener('change',()=>updateRoomName(r.id,nameIn.value));
   body.appendChild(nameIn);
 
@@ -588,6 +646,7 @@ function renderPanel(){
   const descIn=document.createElement('textarea');
   descIn.className='desc-textarea';descIn.placeholder='용도, 참고사항 등 자유로운 메모 입력...';
   descIn.value=r.desc || '';
+  if(isLockedMode) descIn.disabled = true;
   descIn.addEventListener('change',()=>updateRoomDesc(r.id, descIn.value));
   body.appendChild(descIn);
 
@@ -619,7 +678,7 @@ function renderPanel(){
         openPhotoModal(photos, pIdx);
       });
 
-      const pDel = document.createElement('button');pDel.className='photo-thumb-del';pDel.innerHTML='&times;';pDel.title='삭제';
+      const pDel = document.createElement('button');pDel.className='photo-thumb-del';pDel.innerHTML='×';pDel.title='삭제';
       pDel.addEventListener('click', (e) => {
         e.stopPropagation();
         removeRoomPhoto(r.id, pIdx);
@@ -658,14 +717,17 @@ function renderItems(r, container){
 
     const nameIn=document.createElement('input');
     nameIn.className='item-input name';nameIn.type='text';nameIn.value=item.name;nameIn.placeholder='물품명';
+    if(isLockedMode) nameIn.disabled = true;
     nameIn.addEventListener('change',()=>updateItem(r.id,i,'name',nameIn.value));
 
     const numIn=document.createElement('input');
     numIn.className='item-input num';numIn.type='number';numIn.value=item.qty;numIn.min='0';
+    if(isLockedMode) numIn.disabled = true;
     numIn.addEventListener('change',()=>updateItem(r.id,i,'qty',numIn.value));
 
     const noteIn=document.createElement('input');
     noteIn.className='item-input note';noteIn.type='text';noteIn.value=item.note;noteIn.placeholder='비고';
+    if(isLockedMode) noteIn.disabled = true;
     noteIn.addEventListener('change',()=>updateItem(r.id,i,'note',noteIn.value));
 
     const delBtn=document.createElement('button');delBtn.className='del-btn';delBtn.title='삭제';
@@ -678,18 +740,21 @@ function renderItems(r, container){
 }
 
 function updateRoomName(id,val){
+  if(isLockedMode) return;
   const r=(data[currentFloor]||[]).find(r=>r.id===id);
   if(r){r.name=val;if(selectedRoom&&selectedRoom.id===id)selectedRoom.name=val;}
   saveData();renderFloor();
   const ph=document.querySelector('.panel-header-title');if(ph)ph.textContent=val;
 }
 function updateRoomDesc(id,val){
+  if(isLockedMode) return;
   const r=(data[currentFloor]||[]).find(r=>r.id===id);
   if(r){r.desc=val;if(selectedRoom&&selectedRoom.id===id)selectedRoom.desc=val;}
   saveData();
 }
 
 function addRoomPhoto(id, url) {
+  if(isLockedMode) return;
   const r=(data[currentFloor]||[]).find(r=>r.id===id);
   if(r){
     if(!r.photos) r.photos = [];
@@ -699,6 +764,7 @@ function addRoomPhoto(id, url) {
   }
 }
 function removeRoomPhoto(id, idx) {
+  if(isLockedMode) return;
   const r=(data[currentFloor]||[]).find(r=>r.id===id);
   if(r && r.photos){
     r.photos.splice(idx, 1);
@@ -707,12 +773,10 @@ function removeRoomPhoto(id, idx) {
   }
 }
 
-// ★★★ [고도화] 사진 모달 열기 및 휠 스크롤 줌 엔진 초기화 세팅 규칙 추가 ★★★
 function openPhotoModal(photoArray, index) {
   modalPhotos = photoArray;
   modalCurrentIdx = index;
   
-  // 줌인/줌아웃 수치 및 위치값 초기화
   imgScale = 1;
   imgPanX = 0;
   imgPanY = 0;
@@ -734,7 +798,6 @@ function moveModalPhoto(dir) {
   if(modalCurrentIdx >= modalPhotos.length) modalCurrentIdx = 0;
   if(modalCurrentIdx < 0) modalCurrentIdx = modalPhotos.length - 1;
   
-  // 사진을 옆으로 넘길 때는 줌 배율과 드래그 이동 위치를 다시 깨끗하게 초기화해 줍니다.
   imgScale = 1; imgPanX = 0; imgPanY = 0;
   updateModalPhotoView();
 }
@@ -749,7 +812,6 @@ function updateModalPhotoView() {
   }
 }
 
-// 줌 수치와 이동 좌표를 이미지 스타일에 유기적으로 먹여주는 함수
 function applyImgTransform() {
   const img = document.getElementById('modal-img');
   if(img) {
@@ -757,24 +819,20 @@ function applyImgTransform() {
   }
 }
 
-// ★★★ [엔진 빌드] 마우스 휠 스크롤 감지 및 드래그 바인딩 ★★★
 const modalImg = document.getElementById('modal-img');
 const viewport = document.getElementById('modal-img-viewport');
 
-// 1. 마우스 휠 굴릴 때 브라우저 스크롤을 막고 이미지 배율만 줌인/줌아웃 처리
 viewport.addEventListener('wheel', function(e) {
-  e.preventDefault(); // 화면 전체가 스크롤되는 버그 원천 차단
-  
-  const zoomFactor = 0.12; // 스크롤 한 칸당 확대 감도 조절
+  e.preventDefault(); 
+  const zoomFactor = 0.12; 
   if (e.deltaY < 0) {
-    imgScale = Math.min(6, imgScale + zoomFactor); // 최대 6배까지 확대
+    imgScale = Math.min(6, imgScale + zoomFactor); 
   } else {
-    imgScale = Math.max(0.5, imgScale - zoomFactor); // 최소 0.5배까지 축소
+    imgScale = Math.max(0.5, imgScale - zoomFactor); 
   }
   applyImgTransform();
 }, { passive: false });
 
-// 2. 마우스로 붙잡고 슥슥 움직이는(드래그 파닝) 이벤트 장착
 modalImg.addEventListener('mousedown', function(e) {
   e.preventDefault();
   isImgDragging = true;
@@ -793,21 +851,28 @@ document.addEventListener('mouseup', function() {
   isImgDragging = false;
 });
 
-// 모바일 환경을 위한 멀티 터치 줌 가속 규칙도 추가
 viewport.addEventListener('touchmove', function(e) {
   if(e.touches.length === 1 && imgScale > 1) {
-    // 이미지가 확대된 상태에서 폰으로 한 손가락 쓸어넘기기 할 때 사진 이동 허용
     e.preventDefault();
   }
 }, { passive: false });
 
+// ★ [검은색 배경 터치 닫기 기능 장착 완료] ★
+document.getElementById('photo-modal').addEventListener('click', function(e) {
+  if (e.target === this || e.target.id === 'modal-img-viewport' || e.target.classList.contains('modal-content-wrap')) {
+    closePhotoModal();
+  }
+});
+
 
 function updateItem(rid,idx,field,val){
+  if(isLockedMode) return;
   const r=(data[currentFloor]||[]).find(r=>r.id===rid);
   if(r&&r.items[idx]){r.items[idx][field]=field==='qty'?parseInt(val)||0:val;if(selectedRoom&&selectedRoom.id===rid)selectedRoom=r;}
   saveData();renderFloor();
 }
 function removeItem(rid,idx){
+  if(isLockedMode) return;
   const r=(data[currentFloor]||[]).find(r=>r.id===rid);
   if(!r)return;
   r.items.splice(idx,1);
@@ -818,6 +883,7 @@ function removeItem(rid,idx){
   else renderPanel();
 }
 function addItem(rid){
+  if(isLockedMode) return;
   const r=(data[currentFloor]||[]).find(r=>r.id===rid);
   if(!r)return;
   r.items.push({name:'',qty:1,note:''});
@@ -829,6 +895,7 @@ function addItem(rid){
   setTimeout(()=>{const ins=document.querySelectorAll('.item-input.name');if(ins.length)ins[ins.length-1].focus();},50);
 }
 function addRoom(){
+  if(isLockedMode) return;
   const rooms=data[currentFloor]||(data[currentFloor]=[]);
   const id=currentFloor+'-'+Date.now();
   rooms.push({id,name:'새 공간',desc:'',photos:[],x:5,y:68,w:35,h:27,items:[]});
@@ -839,7 +906,7 @@ function addRoom(){
   renderFloor();renderPanel();
 }
 function deleteRoom(){
-  if(!selectedRoom)return;
+  if(isLockedMode || !selectedRoom)return;
   const btn=document.getElementById('del-room-btn');
   if(!btn) return;
   if(btn.dataset.confirming==='1'){
@@ -928,41 +995,9 @@ function exportExcel(){
   XLSX.writeFile(wb,'비품목록.xlsx');
 }
 
-function resetData(){
-  if(window._resetConfirming){
-    window._resetConfirming=false;
-    data=JSON.parse(JSON.stringify(defaultData));
-    selectedRoom=null;
-    saveData();
-    setTimeout(() => { renderFloor(); renderPanel(); }, 300);
-    const rb=document.querySelector('[onclick="resetData()"]');
-    if(rb){rb.innerHTML='🔄 초기화';rb.style.background='';rb.style.color='var(--danger)';rb.style.borderColor='#F7C1C1';}
-  } else {
-    window._resetConfirming=true;
-    const rb=document.querySelector('[onclick="resetData()"]');
-    if(rb){rb.innerHTML='⚠️ 정말 초기화?';rb.style.background='var(--danger)';rb.style.color='#fff';rb.style.borderColor='var(--danger)';}
-    setTimeout(()=>{
-      if(window._resetConfirming){
-        window._resetConfirming=false;
-        const rb2=document.querySelector('[onclick="resetData()"]');
-        if(rb2){rb2.innerHTML='🔄 초기화';rb2.style.background='';rb2.style.color='var(--danger)';rb2.style.borderColor='#F7C1C1';}
-      }
-    },3000);
-  }
-}
-
 document.getElementById('floor-canvas').addEventListener('mousedown', function(e) {
   if (e.target === this || e.target.classList.contains('canvas-grid')) {
     selectRoom(null);
-  }
-});
-
-
-// ★ [추가] 사진 팝업이 떴을 때 검은색 빈 배경을 누르면 자동으로 닫히는 규칙 ★
-document.getElementById('photo-modal').addEventListener('click', function(e) {
-  // 클릭한 지점이 사진(img)이나 좌우 이동 버튼(button)이 아니라 순수 검은 배경일 때만 닫기
-  if (e.target === this || e.target.id === 'modal-img-viewport' || e.target.classList.contains('modal-content-wrap')) {
-    closePhotoModal();
   }
 });
 
