@@ -1,355 +1,1027 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>거여동성당 비품관리 시스템</title>
-  <style>
-    :root {
-      --primary: #6c5ce7;
-      --primary-light: #eeeeff;
-      --bg: #f8f9fa;
-      --border: #e0e0e0;
-      --text: #2d3436;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 10px; }
-    
-    /* 상단 헤더 영역 */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: white;
-      padding: 12px 16px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      margin-bottom: 12px;
-    }
-    .logo-zone { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 1.1rem; }
-    
-    /* 🌟 우측 상단 버튼 및 상태 표시창 통합 박스 */
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    /* 상태 표시창 고정 스타일 (절대 아래 레이아웃을 흔들지 않음) */
-    #save-status {
-      font-size: 0.8rem;
-      font-weight: bold;
-      color: #666;
-      background: #f1f2f6;
-      padding: 6px 10px;
-      border-radius: 20px;
-      white-space: nowrap;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>거여동성당 비품관리 시스템</title>
 
-    .btn {
-      padding: 6px 12px;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 0.85rem;
-      white-space: nowrap;
-    }
-    .btn-lock { background: #ffeaa7; color: #d63031; }
-    .btn-unlock { background: #e3faf2; color: #20c997; }
-    .btn-excel { background: var(--primary); color: white; }
+<meta property="og:type" content="website">
+<meta property="og:title" content="거여동성당 비품관리 시스템">
+<meta property="og:description" content="실시간으로 도면을 편집하고 비품을 관리하는 공유형 시스템">
+<meta property="og:image" content="http://www.geoyeosd.or.kr/kr/images/content/img01.jpg">
+<meta property="og:image:width" content="400">
+<meta property="og:image:height" content="300">
 
-    /* 탭 및 메뉴 */
-    .tabs { display: flex; gap: 8px; margin-bottom: 12px; }
-    .tab { padding: 8px 16px; background: white; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-weight: bold; }
-    .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
-    
-    .floor-select-zone {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-      background: white;
-      padding: 10px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-    select { padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); font-weight: bold; }
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏢</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F8F7FC;
+  --surface:#FFFFFF;
+  --surface2:#F2F0FA;
+  --border:#E4E1F5;
+  --border2:#CBC7E8;
+  --text:#1A1830;
+  --text2:#6B6790;
+  --text3:#9C99B8;
+  --accent:#534AB7;
+  --accent-light:#EEEDFE;
+  --accent-mid:#7F77DD;
+  --accent-dark:#3C3489;
+  --danger:#E24B4A;
+  --danger-light:#FCEBEB;
+  --success:#1D9E75;
+  --success-light:#E1F5EE;
+}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:13px;line-height:1.5}
 
-    /* 도면 구역 */
-    .canvas-container {
-      background: white;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      padding: 16px;
-      margin-bottom: 12px;
-    }
-    /* 🌟 도면 위 타이틀바 (이제 순수하게 제목만 남아서 꿀렁이지 않음!) */
-    .canvas-title-bar {
-      font-size: 0.95rem;
-      font-weight: bold;
-      margin-bottom: 12px;
-      color: #2d3436;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    
-    .grid-canvas {
-      width: 100%;
-      height: 380px;
-      background-color: #fafafa;
-      background-image: linear-gradient(rgba(108,92,231,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(108,92,231,0.04) 1px, transparent 1px);
-      background-size: 20px 20px;
-      position: relative;
-      border-radius: 8px;
-      border: 1px solid #e8e8e8;
-      overflow: hidden;
-    }
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px;display:flex;align-items:center;gap:12px;height:56px;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:600;color:var(--accent-dark)}
+.logo-emoji{font-size:18px}
+.header-subtitle{font-size:11px;color:var(--text3);margin-left:2px;margin-top:2px}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:6px}
 
-    .room {
-      position: absolute;
-      background: rgba(108, 92, 231, 0.08);
-      border: 2px solid var(--primary);
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      font-size: 0.75rem;
-      font-weight: bold;
-      color: #4834d4;
-      text-align: center;
-      padding: 4px;
-      cursor: move;
-      user-select: none;
-    }
-    .room.selected { background: rgba(108, 92, 231, 0.2); box-shadow: 0 0 0 2px #4834d4 inset; }
-    .room-count { font-size: 11px; color: #6c5ce7; font-weight: normal; margin-top: 2px; background: white; padding: 1px 5px; border-radius: 10px; border: 1px solid rgba(108,92,231,0.3); }
+.container{max-width:1100px;margin:0 auto;padding:16px 12px 48px}
 
-    /* 리사이즈 핸들 (PC용) */
-    .resize-handle { position: absolute; width: 10px; height: 10px; background: var(--primary); right: -2px; bottom: -2px; cursor: se-resize; border-radius: 50%; }
+.tab-bar{display:flex;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;margin-bottom:16px;width:fit-content}
+.tab{padding:6px 14px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--text2);border-radius:7px;transition:all 0.15s;display:flex;align-items:center;gap:4px}
+.tab.active{background:var(--accent);color:#fff}
+.tab:not(.active):hover{background:var(--surface2);color:var(--text)}
 
-    /* 상세 패널 및 리스트 */
-    .detail-panel { background: white; border-radius: 12px; border: 1px solid var(--border); padding: 16px; }
-    .panel-title { font-size: 1rem; font-weight: bold; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--bg); padding-bottom: 8px; }
-    
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 0.8rem; color: #666; margin-bottom: 4px; font-weight: bold; }
-    .form-group input, .form-group textarea { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; background: #f5f6fa; font-size: 0.9rem; }
-    
-    .item-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
-    .item-table th, .item-table td { padding: 8px; border-bottom: 1px solid var(--border); text-align: left; }
-    .item-table th { background: #f1f2f6; font-weight: bold; }
-    
-    .btn-del { background: none; border: none; cursor: pointer; font-size: 1rem; color: #ff7675; }
-    .photo-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
-    .photo-item { position: relative; width: 70px; height: 70px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); }
-    .photo-item img { width: 100%; height: 100%; object-fit: cover; }
-    .photo-item .btn-img-del { position: absolute; top: 0; right: 0; background: rgba(0,0,0,0.6); color: white; border: none; width: 18px; height: 18px; font-size: 10px; cursor: pointer; }
-  </style>
+.toolbar{display:flex;gap:6px;margin-bottom:12px;align-items:center;flex-wrap:wrap}
+.select-floor{padding:6px 10px;font-size:12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-weight:500;outline:none}
+.select-floor:focus{border-color:var(--accent)}
+
+.btn{padding:6px 12px;font-size:12px;font-weight:500;border:1px solid var(--border);border-radius:8px;cursor:pointer;background:var(--surface);color:var(--text);display:flex;align-items:center;gap:4px;transition:all 0.15s;font-family:'Noto Sans KR',sans-serif;white-space:nowrap}
+.btn:hover{border-color:var(--border2);background:var(--surface2)}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn.danger{color:var(--danger);border-color:#F7C1C1}
+.btn.danger:hover{background:var(--danger-light)}
+.btn.success{color:var(--success);border-color:#C1F7E4}
+.btn.success:hover{background:var(--success-light)}
+
+/* 상단 잠금 해제 상태 안내용 뱃지 스타일 */
+.lock-badge {font-size:11px;font-weight:600;padding:4px 8px;border-radius:6px;background:var(--surface2);color:var(--text2);display:flex;align-items:center;gap:4px}
+.lock-badge.unlocked {background:var(--success-light);color:var(--success)}
+
+.floor-layout{display:grid;grid-template-columns:1fr 290px;gap:16px;align-items:start}
+
+.canvas-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.canvas-header{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.canvas-header-title{font-size:13px;font-weight:600;color:var(--text)}
+.canvas-header-hint{font-size:11px;color:var(--text3);margin-left:4px}
+.floor-canvas{position:relative;background:var(--surface2);width:100%;aspect-ratio:2.1/1;overflow:hidden}
+.canvas-grid{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:2.5% 5%;opacity:0.4}
+
+.room{position:absolute;border:1.5px solid var(--accent-mid);background:rgba(206,203,246,0.15);border-radius:6px;cursor:grab;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px;text-align:center;user-select:none;overflow:hidden}
+.room:hover{background:rgba(206,203,246,0.3);border-color:var(--accent)}
+.room.selected{background:rgba(127,119,221,0.22);border-color:var(--accent-dark);box-shadow:0 0 0 2px rgba(83,74,183,0.15)}
+.room.dragging{opacity:0.75;cursor:grabbing;z-index:50}
+.room-name{font-size:10px;font-weight:600;color:var(--accent-dark);line-height:1.1;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.room-badge{font-size:8px;color:var(--accent);background:var(--accent-light);padding:0px 4px;border-radius:8px;margin-top:1px;pointer-events:none;transform:scale(0.9)}
+
+/* 잠금 상태일 때 도면 조작 불가용 마우스 커서 지정 */
+body.is-locked .room {cursor:default}
+
+.resize-handle{position:absolute;width:12px;height:12px;background:var(--accent);border-radius:3px;opacity:0;transition:opacity 0.15s;z-index:10}
+.resize-handle::after{content:'';position:absolute;inset:3px;border-right:1.5px solid #fff;border-bottom:1.5px solid #fff}
+.resize-handle.se{bottom:1px;right:1px;cursor:se-resize}
+.resize-handle.sw{bottom:1px;left:1px;cursor:sw-resize;transform:scaleX(-1)}
+.resize-handle.ne{top:1px;right:1px;cursor:ne-resize;transform:scaleY(-1)}
+.resize-handle.nw{top:1px;left:1px;cursor:nw-resize;transform:scale(-1)}
+.room.selected .resize-handle{opacity:1}
+body.is-locked .resize-handle {display:none !important}
+
+.resize-guide {position:absolute;border:2px dashed var(--accent-dark);background:rgba(83,74,183,0.1);border-radius:6px;pointer-events:none;z-index:60;display:none}
+
+.panel-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;position:sticky;top:72px}
+.panel-header{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.panel-header-title{font-size:13px;font-weight:600}
+.panel-body{padding:12px 10px}
+
+.empty-state{text-align:center;padding:24px 16px;color:var(--text3)}
+.empty-state p{font-size:12px;line-height:1.5}
+
+.section-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px}
+.divider{border:none;border-top:1px solid var(--border);margin:12px 0}
+
+.name-input{width:100%;padding:6px 8px;font-size:12px;border:1px solid var(--border);border-radius:7px;background:var(--bg);color:var(--text);outline:none;margin-bottom:10px}
+.name-input:focus{border-color:var(--accent)}
+
+.desc-textarea{width:100%;padding:6px 8px;font-size:12px;border:1px solid var(--border);border-radius:7px;background:var(--bg);color:var(--text);outline:none;margin-bottom:10px;resize:vertical;min-height:54px;font-family:inherit;line-height:1.4}
+.desc-textarea:focus{border-color:var(--accent)}
+
+.photo-input-group {display:flex;gap:4px;margin-bottom:8px}
+.photo-input {flex:1;padding:5px 8px;font-size:12px;border:1px solid var(--border);border-radius:6px;outline:none;background:var(--bg)}
+.photo-input:focus {border-color:var(--accent)}
+.photo-gallery {display:flex;gap:6px;overflow-x:auto;padding:2px 0 6px;margin-bottom:6px;width:100%;scrollbar-width:thin}
+.photo-thumb-wrap {position:relative;width:64px;height:48px;flex-shrink:0;border-radius:4px;border:1px solid var(--border);overflow:hidden;cursor:pointer}
+.photo-thumb {width:100%;height:100%;object-fit:cover}
+.photo-thumb-del {position:absolute;top:0;right:0;background:rgba(226,75,74,0.85);color:#fff;width:16px;height:16px;font-size:10px;display:flex;align-items:center;justify-content:center;border-bottom-left-radius:4px;border:none;cursor:pointer}
+.photo-thumb-del:hover {background:var(--danger)}
+
+/* 잠금 상태일 때 인풋창 비활성화용 제어 배경색 */
+body.is-locked .name-input, body.is-locked .desc-textarea, body.is-locked .photo-input, body.is-locked .item-input {background:#F2F0FA;color:#7F77DD;cursor:not-allowed}
+body.is-locked .photo-input-group, body.is-locked .add-item-btn, body.is-locked .photo-thumb-del, body.is-locked .del-btn {display:none !important}
+
+.photo-modal {position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:2000;display:none;align-items:center;justify-content:center;user-select:none;overflow:hidden}
+.modal-close {position:absolute;top:16px;right:16px;color:#fff;font-size:32px;background:none;border:none;cursor:pointer;z-index:2100}
+.modal-content-wrap {position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+
+.modal-img-viewport {width:85%;height:85%;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.modal-img {max-width:100%;max-height:100%;border-radius:4px;box-shadow:0 8px 32px rgba(0,0,0,0.6);object-fit:contain;position:absolute;transform-origin:center center;cursor:grab;transition:transform 0.05s ease-out}
+.modal-img:active {cursor:grabbing}
+
+.modal-btn {position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.15);color:#fff;border:none;width:44px;height:44px;font-size:22px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;z-index:2050}
+.modal-btn:hover {background:rgba(255,255,255,0.35)}
+.modal-btn.prev {left:24px}
+.modal-btn.next {right:24px}
+.modal-index {position:absolute;bottom:24px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.7);font-size:12px;font-weight:500;background:rgba(0,0,0,0.5);padding:4px 12px;border-radius:12px;z-index:2050}
+.modal-zoom-hint {position:absolute;top:24px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.5);font-size:11px;z-index:2050;background:rgba(255,255,255,0.08);padding:3px 10px;border-radius:6px;pointer-events:none}
+
+.items-header{display:flex;font-size:11px;color:var(--text3);padding:0 2px;margin-bottom:4px;gap:4px;align-items:center}
+.items-header .ih-name{flex: 3.5; text-align:left}
+.items-header .ih-num{width: 38px; text-align:center}
+.items-header .ih-note{flex: 2.5; text-align:left}
+.items-header .ih-del{width: 26px; text-align:center; flex-shrink:0}
+
+.item-row{display:flex;align-items:center;gap:4px;margin-bottom:6px;width:100%}
+.item-input{font-size:12px;padding:5px 4px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);outline:none;min-width:0}
+.item-input:focus{border-color:var(--accent)}
+.item-input.name{flex: 3.5}
+.item-input.num{width: 38px; text-align:center; padding:5px 1px}
+.item-input.note{flex: 2.5}
+
+.del-btn{width:26px;height:26px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;padding:0;font-size:12px}
+.del-btn:hover{background:var(--danger-light);box-shadow: 0 0 0 1px #F7C1C1}
+
+.add-item-btn{width:100%;padding:7px;font-size:12px;color:var(--accent);background:none;border:1px dashed var(--accent-mid);border-radius:6px;cursor:pointer;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:4px}
+.add-item-btn:hover{background:var(--accent-light)}
+
+.floor-badge{font-size:11px;font-weight:600;padding:2px 6px;border-radius:6px;background:var(--accent-light);color:var(--accent-dark);margin-left:auto}
+
+.list-view{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.list-toolbar{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.list-count{font-size:12px;color:var(--text2)}
+table{width:100%;border-collapse:collapse}
+thead{background:var(--surface2)}
+th{text-align:left;padding:8px 10px;font-size:11px;font-weight:600;color:var(--text2);border-bottom:1px solid var(--border)}
+td{padding:8px 10px;font-size:12px;border-bottom:1px solid var(--border);color:var(--text)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--bg)}
+.floor-chip{display:inline-block;font-size:10px;padding:1px 5px;border-radius:5px;font-weight:500;background:var(--accent-light);color:var(--accent-dark)}
+.qty-cell{text-align:center;font-weight:500;color:var(--accent)}
+.note-cell{color:var(--text3);font-size:11px}
+.desc-cell{color:var(--text2);font-size:11px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.no-data{text-align:center;padding:30px;color:var(--text3);font-size:12px}
+
+@media(max-width:768px){
+  header{padding:0 12px; height:50px}
+  .logo{font-size:14px}
+  .container{padding:12px 8px 32px}
+  .floor-layout{grid-template-columns:1fr}
+  .panel-card{position:static; margin-top:8px}
+  .floor-canvas{aspect-ratio: 1.8/1}
+  .room-name{font-size: 8.5px; transform: scale(0.95)}
+  .item-input{font-size:11px; padding:6px 4px}
+  .items-header{font-size:10px}
+  .modal-btn.prev {left:8px}
+  .modal-btn.next {right:8px}
+  /* 저장 상태 표시 레이블 고정 스타일 */
+#save-status, .save-status, [id*="save-status"] {
+    white-space: nowrap !important;  
+    font-size: 0.8rem !important;    
+    display: inline-flex !important;
+    align-items: center;
+    gap: 4px;
+  }
+}
+</style>
 </head>
-<body>
+<body class="is-locked">
 
-  <div class="header">
-    <div class="logo-zone">🏢 비품 관리 <span style="font-size:0.8rem; color:#aaa; font-weight:normal;">Building Inventory</span></div>
-    <div class="header-actions">
-      <span id="save-status">👀 조회 모드</span>
-      <button id="lock-btn" class="btn btn-lock" onclick="toggleLockMode()">🔒 편집 잠금</button>
-      <button id="excel-btn" class="btn btn-excel">📥 엑셀</button>
+<header>
+  <div class="logo">
+    <span class="logo-emoji">🏢</span>
+    <span>비품 관리</span>
+    <span class="header-subtitle">Building Inventory</span>
+  </div>
+  <div class="header-right">
+    <button class="btn" id="lock-toggle-btn" onclick="toggleLockMode()">🔒 편집 잠금</button>
+    <button class="btn primary" onclick="exportExcel()">
+      📥 엑셀
+    </button>
+  </div>
+</header>
+
+<div class="container">
+  <div class="tab-bar">
+    <button class="tab active" onclick="showTab('map')" id="tab-map">
+      🗺️ 층별 도면
+    </button>
+    <button class="tab" onclick="showTab('list')" id="tab-list">
+      📋 전체 목록
+    </button>
+  </div>
+
+  <div id="view-map">
+    <div class="toolbar">
+      <select class="select-floor" id="floor-select" onchange="changeFloor()">
+        <option value="F0">🏡 마당(주차장)</option>
+        <option value="B1">🅱 지하 1층</option>
+        <option value="F1" selected>1 지상 1층</option>
+        <option value="F2">2 지상 2층</option>
+        <option value="F3">3 지상 3층</option>
+      </select>
+      <button class="btn" id="add-room-btn" onclick="addRoom()" style="display:none">➕ 공간 추가</button>
+      <button class="btn danger" onclick="deleteRoom()" id="del-room-btn" style="display:none">
+        🗑️ 공간 삭제
+      </button>
+    </div>
+
+    <div class="floor-layout">
+      <div class="canvas-card">
+        <div class="canvas-header">
+          <span style="font-size:13px">📍</span>
+          <span class="canvas-header-title" id="floor-title">지상 1층</span>
+          <span class="canvas-header-hint" id="canvas-hint">— 🔒 현재 조회 모드입니다. (수정하려면 잠금을 해제하세요)</span>
+          <span id="save-indicator" style="margin-left:auto;font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px">💾 연결 중...</span>
+        </div>
+        <div class="floor-canvas" id="floor-canvas">
+          <div class="canvas-grid"></div>
+          <div class="resize-guide" id="resize-guide"></div>
+        </div>
+      </div>
+
+      <div class="panel-card" id="side-panel">
+        <div class="panel-header">
+          <span style="font-size:13px">📦</span>
+          <span class="panel-header-title">비품 목록</span>
+        </div>
+        <div class="panel-body">
+          <div class="empty-state">
+            <p>👇<br><br>공간을 클릭하면<br>비품 목록이 표시돼요</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="tabs">
-    <div class="tab active" onclick="alert('층별 도면 모드입니다.')">🗺️ 층별 도면</div>
-    <div class="tab" onclick="alert('준비 중인 기능입니다.')">📋 전체 목록</div>
-  </div>
-
-  <div class="floor-select-zone">
-    <select id="floor-select" onchange="switchFloor(this.value)">
-      <option value="B1">🅱️ 지하 1층</option>
-      <option value="F0">🌿 마당</option>
-      <option value="F1">1️⃣ 지상 1층</option>
-      <option value="F2">2️⃣ 지상 2층</option>
-      <option value="F3">3️⃣ 지상 3층</option>
-    </select>
-    <button class="btn" style="background:#f1f2f6;" onclick="addRoom()">➕ 공간 추가</button>
-    <button class="btn" style="background:#fff0f0; color:#ff7675;" onclick="deleteRoom()">🗑️ 공간 삭제</button>
-  </div>
-
-  <div class="canvas-container">
-    <div class="canvas-title-bar">
-      📍 <span id="canvas-floor-title">지하 1층</span> 
-      <span id="canvas-mode-guide" style="font-size:0.75rem; color:#888; font-weight:normal;">— 🔒 조회 모드입니다. (수정하려면 잠금을 해제하세요)</span>
+  <div id="view-list" style="display:none">
+    <div class="list-view">
+      <div class="list-toolbar">
+        <span class="list-count" id="list-count">전체 0개 항목</span>
+        <button class="btn primary" onclick="exportExcel()" style="margin-left:auto">
+          📥 엑셀 출력
+        </button>
+      </div>
+      <table>
+        <thead>
+          <tr><th>층</th><th>장소</th><th>공간 설명</th><th>물품</th><th style="text-align:center">개수</th><th>비고</th></tr>
+        </thead>
+        <tbody id="list-tbody"></tbody>
+      </table>
+      <div class="no-data" id="no-data" style="display:none">등록된 비품이 없어요</div>
     </div>
-    <div id="grid-canvas" class="grid-canvas"></div>
   </div>
+</div>
 
-  <div id="detail-panel" class="detail-panel" style="display:none;">
+<div class="photo-modal" id="photo-modal">
+  <button class="modal-close" onclick="closePhotoModal()">×</button>
+  <div class="modal-zoom-hint">🖱️ 마우스 휠: 확대/축소  |  🖐️ 드래그: 사진 이동</div>
+  <div class="modal-content-wrap">
+    <button class="modal-btn prev" onclick="moveModalPhoto(-1)">❮</button>
+    <div class="modal-img-viewport" id="modal-img-viewport">
+      <img src="" class="modal-img" id="modal-img">
     </div>
+    <button class="modal-btn next" onclick="moveModalPhoto(1)">❯</button>
+    <div class="modal-index" id="modal-index">1 / 1</div>
+  </div>
+</div>
 
-  <script>
-    // 🔐 비밀번호 설정 규칙
-    const ADMIN_PASSWORD = "2580"; 
-    let isLockedMode = true; // 기본값은 안전하게 잠금(조회) 모드
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+// ★ 회원님의 구글 웹 앱 직통 주소 원천 탑재 완료! ★
+const API_URL = "https://script.google.com/macros/s/AKfycbzQNEwgS_QGHWpcuE_4LEPaB8gEb0USTHL6kyF5K6taCUl_3l9Ot4CiMf06avd19SoBxQ/exec";
 
-    // 임시 샘플 데이터 구조 (구글 시트 A1 셀과 연동되는 양식)
-    let currentFloor = "B1";
-    let selectedRoom = null;
-    let data = {
-      "B1": [
-        { id: 1, name: "대건 안드레아", x: 280, y: 20, w: 100, h: 340, items: [], photos: [] },
-        { id: 2, name: "주방", x: 200, y: 20, w: 70, h: 140, items: [], photos: [] },
-        { id: 3, name: "창고", x: 200, y: 270, w: 50, h: 90, items: [], photos: [] }
-      ],
-      "F0": [], "F1": [], "F2": [], "F3": []
-    };
+// ★ [보안 규칙] 관리자용 전용 암호 키값 지정 ★
+const ADMIN_PASSWORD = "2124"; 
+let isLockedMode = true; // 최초 상태는 읽기 전용 모드
 
-    // 초기 구동 및 화면 렌더링
-    window.onload = function() {
-      renderFloor();
-      updateLockUI();
-    };
+const FLOOR_NAMES={F0:'마당(주차장)',B1:'지하 1층',F1:'지상 1층',F2:'지상 2층',F3:'지상 3층'};
+const FLOOR_ORDER=['F0','B1','F1','F2','F3'];
+let currentFloor='F1';
+let selectedRoom=null;
 
-    function renderFloor() {
-      const canvas = document.getElementById('grid-canvas');
-      canvas.innerHTML = '';
-      const rooms = data[currentFloor] || [];
+let modalPhotos = [];
+let modalCurrentIdx = 0;
+
+let imgScale = 1;
+let imgPanX = 0;
+let imgPanY = 0;
+let isImgDragging = false;
+let startPanX = 0;
+let startPanY = 0;
+
+const defaultData={F0:[],B1:[],F1:[],F2:[],F3:[]};
+
+let data = {};
+let saveTimeout = null;
+
+// 암호 일치 여부를 판별해서 잠금/해제 전환해주는 마법 함수
+function toggleLockMode() {
+  if (isLockedMode) {
+    const userInput = prompt("🔓 편집 모드로 전환합니다.\n관리자 비밀번호를 입력해 주세요:");
+    if (userInput === ADMIN_PASSWORD) {
+      isLockedMode = false;
+      document.body.classList.remove('is-locked');
+      document.getElementById('lock-toggle-btn').className = "btn success";
+      document.getElementById('lock-toggle-btn').innerHTML = "🔓 편집 중...";
+      document.getElementById('canvas-hint').textContent = "— 드래그하여 배치 수정 가능 (Ctrl+드래그시 복사)";
+      document.getElementById('add-room-btn').style.display = "inline-block";
+      if (selectedRoom) document.getElementById('del-room-btn').style.display = "flex";
+      alert("✅ 인증되었습니다. 이제 자유롭게 수정할 수 있습니다.");
+    } else if (userInput !== null) {
+      alert("❌ 비밀번호가 틀렸습니다. 조회가 차단 해제되지 않습니다.");
+    }
+  } else {
+    // 다시 잠금 모드로 회귀 처리
+    isLockedMode = true;
+    document.body.classList.add('is-locked');
+    document.getElementById('lock-toggle-btn').className = "btn";
+    document.getElementById('lock-toggle-btn').innerHTML = "🔒 편집 잠금";
+    document.getElementById('canvas-hint').textContent = "— 🔒 현재 조회 모드입니다. (수정하려면 잠금을 해제하세요)";
+    document.getElementById('add-room-btn').style.display = "none";
+    document.getElementById('del-room-btn').style.display = "none";
+    alert("🔒 다시 안전하게 조회 전용 모드로 잠갔습니다.");
+  }
+  renderFloor(); renderPanel();
+}
+
+function saveData(){
+  // 잠겨있을 때는 구글 시트로의 어떠한 유령 저장 신호 송출도 원천 차단시킴
+  if(isLockedMode) return;
+  
+  const ind=document.getElementById('save-indicator');
+  if(ind){ ind.style.color='var(--text2)'; ind.innerHTML='🔄 저장 중...'; }
+  if(saveTimeout) clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    fetch(API_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    })
+    .then(() => {
+      if(ind){
+        ind.style.color='var(--success)'; ind.innerHTML='✅ 저장됨';
+        setTimeout(()=>{ ind.style.color='var(--text3)'; ind.innerHTML='💾 자동 저장됨'; },1500);
+      }
+    })
+    .catch(e => { if(ind){ ind.style.color='var(--danger)'; ind.innerHTML='⚠️ 저장 실패'; } });
+  }, 800);
+}
+
+function loadData(){
+  const ind=document.getElementById('save-indicator');
+  fetch(API_URL)
+    .then(res => res.json())
+    .then(json => {
+      if(json && json.B1 && json.F1) {
+        data = json;
+        if(!data.F0) data.F0 = [];
+      } else { data = JSON.parse(JSON.stringify(defaultData)); }
+      if(ind){ ind.style.color='var(--text3)'; ind.innerHTML='💾 동기화 완료'; }
+      changeFloor();
+    })
+    .catch(e => {
+      console.error("데이터 로드 실패", e);
+      data = JSON.parse(JSON.stringify(defaultData));
+      if(ind){ ind.style.color='var(--danger)'; ind.innerHTML='⚠️ 로드 실패'; }
+      changeFloor();
+    });
+}
+
+function h(s){return String(s||'').replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>').replace(/"/g,'"')}
+
+function changeFloor(){
+  currentFloor=document.getElementById('floor-select').value;
+  selectedRoom=null;
+  document.getElementById('floor-title').textContent=FLOOR_NAMES[currentFloor];
+  const delBtn = document.getElementById('del-room-btn');
+  if(delBtn) delBtn.style.display='none';
+  renderFloor();renderPanel();
+}
+
+function renderFloor(){
+  const canvas=document.getElementById('floor-canvas');
+  if(!canvas) return;
+  const rooms=data[currentFloor]||[];
+  const existing=[...canvas.querySelectorAll('.room')];
+  existing.forEach(e=>e.remove());
+  rooms.forEach(room=>{
+    const el=document.createElement('div');
+    el.className='room'+(selectedRoom&&selectedRoom.id===room.id?' selected':'');
+    el.style.cssText=`left:${room.x}%;top:${room.y}%;width:${room.w}%;height:${room.h}%`;
+    const total=room.items.reduce((s,i)=>s+Number(i.qty||0),0);
+    el.innerHTML=`<span class="room-name">${h(room.name)}</span>${total>0?`<span class="room-badge">${total}개</span>`:''}
+      <div class="resize-handle se" data-dir="se"></div>
+      <div class="resize-handle sw" data-dir="sw"></div>
+      <div class="resize-handle ne" data-dir="ne"></div>
+      <div class="resize-handle nw" data-dir="nw"></div>`;
+    el.dataset.roomId=room.id;
+    attachRoomEvents(el, room.id);
+    canvas.appendChild(el);
+  });
+}
+
+function getRoom(id){return(data[currentFloor]||[]).find(r=>r.id===id);}
+
+function attachRoomEvents(el, roomId){
+  let dragState=null;
+  const guide = document.getElementById('resize-guide');
+
+  el.addEventListener('mousedown', e=>{
+    e.stopPropagation();
+    const room = getRoom(roomId);
+    if(!room) return;
+
+    // 조회 모드일 때는 방 선택만 가능하고 드래그나 리사이즈 관련 연산 연동을 강제로 튕겨버림
+    if(isLockedMode) {
+      selectRoom(roomId);
+      return;
+    }
+
+    if(e.target.classList.contains('resize-handle')){
+      e.stopPropagation(); e.preventDefault();
+      const dir=e.target.dataset.dir;
+      const canvas=document.getElementById('floor-canvas');
+      const cr=canvas.getBoundingClientRect();
       
-      rooms.forEach(r => {
-        const div = document.createElement('div');
-        div.className = `room ${selectedRoom && selectedRoom.id === r.id ? 'selected' : ''}`;
-        div.style.left = r.x + 'px';
-        div.style.top = r.y + 'px';
-        div.style.width = r.w + 'px';
-        div.style.height = r.h + 'px';
-        
-        // 방 이름 및 비품 개수 배지
-        div.innerHTML = `<div>${r.name}</div>`;
-        if(r.items && r.items.length > 0) {
-          div.innerHTML += `<div class="room-count">${r.items.length}개</div>`;
-        }
+      dragState={type:'resize',dir,startX:e.clientX,startY:e.clientY,
+        origX:room.x,origY:room.y,origW:room.w,origH:room.h,cw:cr.width,ch:cr.height};
+      
+      if(guide){
+        guide.style.display = 'block';
+        guide.style.cssText = `display:block;left:${room.x}%;top:${room.y}%;width:${room.w}%;height:${room.h}%`;
+      }
+      
+      selectRoom(roomId);
+      document.addEventListener('mousemove',onDrag);
+      document.addEventListener('mouseup',onUp);
+      return;
+    }
 
-        // PC용 리사이즈 핸들 매립 (편집 중일 때만 등장)
-        if(!isLockedMode) {
-          const handle = document.createElement('div');
-          handle.className = 'resize-handle';
-          handle.addEventListener('mousedown', (e) => initResize(e, r));
-          div.appendChild(handle);
-          
-          // 마우스 드래그 이동 이벤트 리스너 등록
-          div.addEventListener('mousedown', (e) => initDrag(e, r));
-        }
+    e.preventDefault();
+    const canvas=document.getElementById('floor-canvas');
+    const cr=canvas.getBoundingClientRect();
+    
+    if(e.ctrlKey) {
+      const rooms = data[currentFloor];
+      const newId = currentFloor + '-' + Date.now();
+      const copiedRoom = {
+        id: newId,
+        name: room.name + ' (복사)',
+        desc: room.desc || '',
+        photos: room.photos ? [...room.photos] : [],
+        x: room.x,
+        y: room.y,
+        w: room.w,
+        h: room.h,
+        items: JSON.parse(JSON.stringify(room.items))
+      };
+      rooms.push(copiedRoom);
+      selectedRoom = copiedRoom;
+      renderFloor();
+      
+      const newEl = canvas.querySelector(`[data-roomId="${newId}"]`);
+      if(newEl) {
+        dragState={type:'move',startX:e.clientX,startY:e.clientY,origX:room.x,origY:room.y,cw:cr.width,ch:cr.height,targetId:newId,el:newEl};
+        newEl.classList.add('dragging');
+      }
+    } else {
+      dragState={type:'move',startX:e.clientX,startY:e.clientY,origX:room.x,origY:room.y,cw:cr.width,ch:cr.height,targetId:roomId,el:el};
+      el.classList.add('dragging');
+    }
+    
+    document.addEventListener('mousemove',onDrag);
+    document.addEventListener('mouseup',onUp);
+  });
 
-        // 공간 클릭시 상세 패널 열기
-        div.addEventListener('click', (e) => {
-          if(e.target.className === 'resize-handle') return;
-          selectRoom(r);
-        });
+  el.addEventListener('touchstart', e=>{
+    e.stopPropagation();
+    if(isLockedMode) {
+      selectRoom(roomId);
+      return;
+    }
+    if(e.target.classList.contains('resize-handle')) return;
+    const touch = e.touches[0];
+    const canvas=document.getElementById('floor-canvas');
+    const cr=canvas.getBoundingClientRect();
+    const room=getRoom(roomId);
+    if(!room)return;
+    dragState={type:'move',startX:touch.clientX,startY:touch.clientY,origX:room.x,origY:room.y,cw:cr.width,ch:cr.height,targetId:roomId,el:el};
+    el.classList.add('dragging');
+    
+    const onTouchMove = (em) => {
+      if(!dragState) return;
+      const tm = em.touches[0];
+      const dx=(tm.clientX-dragState.startX)/dragState.cw*100;
+      const dy=(tm.clientY-dragState.startY)/dragState.ch*100;
+      const tRoom = getRoom(dragState.targetId);
+      tRoom.x=Math.max(0,Math.min(100-tRoom.w, Math.round(dragState.origX+dx)));
+      tRoom.y=Math.max(0,Math.min(100-tRoom.h, Math.round(dragState.origY+dy)));
+      dragState.el.style.cssText=`left:${tRoom.x}%;top:${tRoom.y}%;width:${tRoom.w}%;height:${tRoom.h}%`;
+    };
+    
+    const onTouchEnd = () => {
+      el.classList.remove('dragging');
+      saveData();
+      selectRoom(dragState.targetId);
+      dragState=null;
+      document.removeEventListener('touchmove', onTouchMove);
+      document.removeEventListener('touchend', onTouchEnd);
+    };
+    document.addEventListener('touchmove', onTouchMove);
+    document.addEventListener('touchend', onTouchEnd);
+  });
 
-        canvas.appendChild(div);
+  function onDrag(e){
+    if(!dragState)return;
+    const room = getRoom(dragState.targetId || roomId);
+    if(!room)return;
+    const dx=(e.clientX-dragState.startX)/dragState.cw*100;
+    const dy=(e.clientY-dragState.startY)/dragState.ch*100;
+    
+    if(dragState.type==='move'){
+      room.x=Math.max(0,Math.min(100-room.w, Math.round(dragState.origX+dx)));
+      room.y=Math.max(0,Math.min(100-room.h, Math.round(dragState.origY+dy)));
+      dragState.el.style.cssText=`left:${room.x}%;top:${room.y}%;width:${room.w}%;height:${room.h}%`;
+    } else {
+      const dir=dragState.dir;
+      let nx=dragState.origX, ny=dragState.origY, nw=dragState.origW, nh=dragState.origH;
+      if(dir.includes('e')){nw=Math.max(5,Math.round(dragState.origW+dx));}
+      if(dir.includes('s')){nh=Math.max(5,Math.round(dragState.origH+dy));}
+      if(dir.includes('w')){const nd=Math.min(dragState.origW-5,Math.round(dx));nx=dragState.origX+nd;nw=dragState.origW-nd;}
+      if(dir.includes('n')){const nd=Math.min(dragState.origH-5,Math.round(dy));ny=dragState.origY+nd;nh=dragState.origH-nd;}
+      
+      if(guide){
+        guide.style.cssText=`display:block;left:${Math.max(0,nx)}%;top:${Math.max(0,ny)}%;width:${Math.max(5,nw)}%;height:${Math.max(5,nh)}%`;
+      }
+      
+      dragState.currentX = Math.max(0,nx); dragState.currentY = Math.max(0,ny);
+      dragState.currentW = Math.max(5,nw); dragState.currentH = Math.max(5,nh);
+    }
+  }
+
+  function onUp(){
+    if(!dragState)return;
+    if(dragState.el) dragState.el.classList.remove('dragging');
+    
+    if(dragState.type === 'resize' && dragState.currentW !== undefined) {
+      const room = getRoom(roomId);
+      if(room) {
+        room.x = dragState.currentX; room.y = dragState.currentY;
+        room.w = dragState.currentW; room.h = dragState.currentH;
+      }
+    }
+    if(guide) guide.style.display = 'none';
+    
+    saveData();
+    selectRoom(dragState.targetId || roomId);
+    dragState=null;
+    document.removeEventListener('mousemove',onDrag);
+    document.removeEventListener('mouseup',onUp);
+  }
+}
+
+function selectRoom(id){
+  const rooms=data[currentFloor]||[];
+  selectedRoom=rooms.find(r=>r.id===id)||null;
+  const delBtn = document.getElementById('del-room-btn');
+  if(delBtn) delBtn.style.display=(selectedRoom && !isLockedMode)?'flex':'none';
+  renderFloor();renderPanel();
+}
+
+function convertDriveUrl(url) {
+  if(!url) return "";
+  if(/inline_embed|googleusercontent/i.test(url)) return url; 
+  let fileId = "";
+  let match1 = url.match(/\/file\/d\/([^\/\?\s]+)/);
+  if(match1 && match1[1]) { fileId = match1[1]; } else {
+    let match2 = url.match(/[?&]id=([^&]+)/);
+    if(match2 && match2[1]) { fileId = match2[1]; } else {
+      let match3 = url.match(/\/d\/([^\/\?\s]+)/);
+      if(match3 && match3[1]) { fileId = match3[1]; }
+    }
+  }
+  if(fileId) { return "https://lh3.googleusercontent.com/d/" + fileId; }
+  return url;
+}
+
+function renderPanel(){
+  const panel=document.getElementById('side-panel');
+  if(!panel) return;
+  if(!selectedRoom){
+    panel.innerHTML='';
+    const hdr=document.createElement('div');hdr.className='panel-header';
+    hdr.innerHTML='<span>📦</span><span class="panel-header-title">비품 목록</span>';
+    const body=document.createElement('div');body.className='panel-body';
+    body.innerHTML='<div class="empty-state"><p>👇<br><br>공간을 클릭하면<br>비품 목록이 표시돼요</p></div>';
+    panel.appendChild(hdr);panel.appendChild(body);
+    return;
+  }
+  const r=selectedRoom;
+  panel.innerHTML='';
+
+  const hdr=document.createElement('div');hdr.className='panel-header';
+  hdr.innerHTML=`<span>🚪</span><span class="panel-header-title">${h(r.name)}</span><span class="floor-badge">${FLOOR_NAMES[currentFloor]}</span>`;
+  panel.appendChild(hdr);
+
+  const body=document.createElement('div');body.className='panel-body';
+
+  const sl1=document.createElement('div');sl1.className='section-label';sl1.textContent='공간명';
+  body.appendChild(sl1);
+  const nameIn=document.createElement('input');
+  nameIn.className='name-input';nameIn.type='text';nameIn.value=r.name;nameIn.placeholder='공간명 입력';
+  if(isLockedMode) nameIn.disabled = true; // 읽기 전용 상태일 때 태그 락 처리
+  nameIn.addEventListener('change',()=>updateRoomName(r.id,nameIn.value));
+  body.appendChild(nameIn);
+
+  const slDesc=document.createElement('div');slDesc.className='section-label';slDesc.textContent='공간 설명 (메모)';
+  body.appendChild(slDesc);
+  const descIn=document.createElement('textarea');
+  descIn.className='desc-textarea';descIn.placeholder='용도, 참고사항 등 자유로운 메모 입력...';
+  descIn.value=r.desc || '';
+  if(isLockedMode) descIn.disabled = true;
+  descIn.addEventListener('change',()=>updateRoomDesc(r.id, descIn.value));
+  body.appendChild(descIn);
+
+  const slPhoto=document.createElement('div');slPhoto.className='section-label';slPhoto.textContent='공간 사진 등록';
+  body.appendChild(slPhoto);
+
+  const photoGroup = document.createElement('div');photoGroup.className='photo-input-group';
+  const pInput = document.createElement('input');pInput.className='photo-input';pInput.type='text';pInput.placeholder='구글 드라이브 공유 링크 붙여넣기';
+  const pBtn = document.createElement('button');pBtn.className='btn primary';pBtn.textContent='추가';
+  pBtn.addEventListener('click', () => {
+    if(!pInput.value.trim()) return;
+    addRoomPhoto(r.id, pInput.value.trim());
+    pInput.value = "";
+  });
+  photoGroup.appendChild(pInput);photoGroup.appendChild(pBtn);
+  body.appendChild(photoGroup);
+
+  const gallery = document.createElement('div');gallery.className='photo-gallery';
+  const photos = r.photos || [];
+  if(photos.length === 0) {
+    gallery.innerHTML = '<span style="font-size:11px;color:var(--text3);padding:8px 0">등록된 사진이 없습니다.</span>';
+  } else {
+    photos.forEach((url, pIdx) => {
+      const wrap = document.createElement('div');wrap.className='photo-thumb-wrap';
+      const webUrl = convertDriveUrl(url);
+      wrap.innerHTML = `<img src="${webUrl}" class="photo-thumb">`;
+      wrap.addEventListener('click', (e) => {
+        if(e.target.classList.contains('photo-thumb-del')) return;
+        openPhotoModal(photos, pIdx);
       });
-      
-      document.getElementById('canvas-floor-title').innerText = document.getElementById('floor-select').options[document.getElementById('floor-select').selectedIndex].text;
-    }
 
-    // 🔒 🔓 잠금 및 편집 모드 전환 시스템
-    function toggleLockMode() {
-      if (isLockedMode) {
-        // 잠금 해제 시도 시 비밀번호 검증
-        const pw = prompt("🔑 관리자 편집 비밀번호를 입력하세요:");
-        if (pw === ADMIN_PASSWORD) {
-          isLockedMode = false;
-          alert("🔓 잠금이 해제되었습니다. 자유롭게 드래그 및 수정이 가능합니다.");
-        } else if (pw !== null) {
-          alert("❌ 비밀번호가 틀렸습니다!");
-        }
+      const pDel = document.createElement('button');pDel.className='photo-thumb-del';pDel.innerHTML='×';pDel.title='삭제';
+      pDel.addEventListener('click', (e) => {
+        e.stopPropagation();
+        removeRoomPhoto(r.id, pIdx);
+      });
+      wrap.appendChild(pDel);
+      gallery.appendChild(wrap);
+    });
+  }
+  body.appendChild(gallery);
+
+  const div=document.createElement('hr');div.className='divider';body.appendChild(div);
+
+  const sl2=document.createElement('div');sl2.className='section-label';sl2.textContent='비품 목록';
+  body.appendChild(sl2);
+
+  const ihdr=document.createElement('div');ihdr.className='items-header';
+  ihdr.innerHTML='<span class="ih-name">물품명</span><span class="ih-num">개수</span><span class="ih-note">비고</span><span class="ih-del"></span>';
+  body.appendChild(ihdr);
+
+  const itemsList=document.createElement('div');itemsList.id='items-list';
+  body.appendChild(itemsList);
+  renderItems(r, itemsList);
+
+  const addBtn=document.createElement('button');addBtn.className='add-item-btn';
+  addBtn.innerHTML='➕ 비품 추가';
+  addBtn.addEventListener('click',()=>addItem(r.id));
+  body.appendChild(addBtn);
+
+  panel.appendChild(body);
+}
+
+function renderItems(r, container){
+  container.innerHTML='';
+  r.items.forEach((item,i)=>{
+    const row=document.createElement('div');row.className='item-row';
+
+    const nameIn=document.createElement('input');
+    nameIn.className='item-input name';nameIn.type='text';nameIn.value=item.name;nameIn.placeholder='물품명';
+    if(isLockedMode) nameIn.disabled = true;
+    nameIn.addEventListener('change',()=>updateItem(r.id,i,'name',nameIn.value));
+
+    const numIn=document.createElement('input');
+    numIn.className='item-input num';numIn.type='number';numIn.value=item.qty;numIn.min='0';
+    if(isLockedMode) numIn.disabled = true;
+    numIn.addEventListener('change',()=>updateItem(r.id,i,'qty',numIn.value));
+
+    const noteIn=document.createElement('input');
+    noteIn.className='item-input note';noteIn.type='text';noteIn.value=item.note;noteIn.placeholder='비고';
+    if(isLockedMode) noteIn.disabled = true;
+    noteIn.addEventListener('change',()=>updateItem(r.id,i,'note',noteIn.value));
+
+    const delBtn=document.createElement('button');delBtn.className='del-btn';delBtn.title='삭제';
+    delBtn.innerHTML='🗑️';
+    delBtn.addEventListener('click',()=>removeItem(r.id,i));
+
+    row.appendChild(nameIn);row.appendChild(numIn);row.appendChild(noteIn);row.appendChild(delBtn);
+    container.appendChild(row);
+  });
+}
+
+function updateRoomName(id,val){
+  if(isLockedMode) return;
+  const r=(data[currentFloor]||[]).find(r=>r.id===id);
+  if(r){r.name=val;if(selectedRoom&&selectedRoom.id===id)selectedRoom.name=val;}
+  saveData();renderFloor();
+  const ph=document.querySelector('.panel-header-title');if(ph)ph.textContent=val;
+}
+function updateRoomDesc(id,val){
+  if(isLockedMode) return;
+  const r=(data[currentFloor]||[]).find(r=>r.id===id);
+  if(r){r.desc=val;if(selectedRoom&&selectedRoom.id===id)selectedRoom.desc=val;}
+  saveData();
+}
+
+function addRoomPhoto(id, url) {
+  if(isLockedMode) return;
+  const r=(data[currentFloor]||[]).find(r=>r.id===id);
+  if(r){
+    if(!r.photos) r.photos = [];
+    r.photos.push(url);
+    if(selectedRoom&&selectedRoom.id===id) selectedRoom.photos = r.photos;
+    saveData(); renderPanel();
+  }
+}
+function removeRoomPhoto(id, idx) {
+  if(isLockedMode) return;
+  
+  // 🔒 실수 방지용 팝업창 규칙 추가!
+  if (!confirm("📷 이 공간 사진을 정말로 삭제하시겠습니까?")) {
+    return; // [취소]를 누르면 삭제를 안 하고 그냥 도망칩니다.
+  }
+
+  const r=(data[currentFloor]||[]).find(r=>r.id===id);
+  if(r && r.photos){
+    r.photos.splice(idx, 1);
+    if(selectedRoom&&selectedRoom.id===id) selectedRoom.photos = r.photos;
+    saveData(); renderPanel();
+  }
+}
+
+function openPhotoModal(photoArray, index) {
+  modalPhotos = photoArray;
+  modalCurrentIdx = index;
+  
+  imgScale = 1;
+  imgPanX = 0;
+  imgPanY = 0;
+  
+  const modal = document.getElementById('photo-modal');
+  if(modal) {
+    modal.style.display = 'flex';
+    updateModalPhotoView();
+  }
+}
+
+function closePhotoModal() {
+  const modal = document.getElementById('photo-modal');
+  if(modal) modal.style.display = 'none';
+}
+
+function moveModalPhoto(dir) {
+  modalCurrentIdx += dir;
+  if(modalCurrentIdx >= modalPhotos.length) modalCurrentIdx = 0;
+  if(modalCurrentIdx < 0) modalCurrentIdx = modalPhotos.length - 1;
+  
+  imgScale = 1; imgPanX = 0; imgPanY = 0;
+  updateModalPhotoView();
+}
+
+function updateModalPhotoView() {
+  const img = document.getElementById('modal-img');
+  const idxText = document.getElementById('modal-index');
+  if(img && modalPhotos[modalCurrentIdx]) {
+    img.src = convertDriveUrl(modalPhotos[modalCurrentIdx]);
+    idxText.textContent = `${modalCurrentIdx + 1} / ${modalPhotos.length}`;
+    applyImgTransform();
+  }
+}
+
+function applyImgTransform() {
+  const img = document.getElementById('modal-img');
+  if(img) {
+    img.style.transform = `translate(${imgPanX}px, ${imgPanY}px) scale(${imgScale})`;
+  }
+}
+
+const modalImg = document.getElementById('modal-img');
+const viewport = document.getElementById('modal-img-viewport');
+
+viewport.addEventListener('wheel', function(e) {
+  e.preventDefault(); 
+  const zoomFactor = 0.12; 
+  if (e.deltaY < 0) {
+    imgScale = Math.min(6, imgScale + zoomFactor); 
+  } else {
+    imgScale = Math.max(0.5, imgScale - zoomFactor); 
+  }
+  applyImgTransform();
+}, { passive: false });
+
+modalImg.addEventListener('mousedown', function(e) {
+  e.preventDefault();
+  isImgDragging = true;
+  startPanX = e.clientX - imgPanX;
+  startPanY = e.clientY - imgPanY;
+});
+
+document.addEventListener('mousemove', function(e) {
+  if (!isImgDragging) return;
+  imgPanX = e.clientX - startPanX;
+  imgPanY = e.clientY - startPanY;
+  applyImgTransform();
+});
+
+document.addEventListener('mouseup', function() {
+  isImgDragging = false;
+});
+
+viewport.addEventListener('touchmove', function(e) {
+  if(e.touches.length === 1 && imgScale > 1) {
+    e.preventDefault();
+  }
+}, { passive: false });
+
+// ★ [검은색 배경 터치 닫기 기능 장착 완료] ★
+document.getElementById('photo-modal').addEventListener('click', function(e) {
+  if (e.target === this || e.target.id === 'modal-img-viewport' || e.target.classList.contains('modal-content-wrap')) {
+    closePhotoModal();
+  }
+});
+
+
+function updateItem(rid,idx,field,val){
+  if(isLockedMode) return;
+  const r=(data[currentFloor]||[]).find(r=>r.id===rid);
+  if(r&&r.items[idx]){r.items[idx][field]=field==='qty'?parseInt(val)||0:val;if(selectedRoom&&selectedRoom.id===rid)selectedRoom=r;}
+  saveData();renderFloor();
+}
+function removeItem(rid,idx){
+  if(isLockedMode) return;
+  const r=(data[currentFloor]||[]).find(r=>r.id===rid);
+  if(!r)return;
+
+  // 🔒 비품 실수 삭제 방지용 팝업창 규칙 추가!
+  if (!confirm("🗑️ 이 비품 항목을 정말로 삭제하시겠습니까?")) {
+    return; // [취소]를 누르면 삭제를 중단하고 그냥 빠져나갑니다.
+  }
+  
+  r.items.splice(idx,1);
+  if(selectedRoom&&selectedRoom.id===rid)selectedRoom=r;
+  saveData();renderFloor();
+  const container=document.getElementById('items-list');
+  if(container)renderItems(r,container);
+  else renderPanel();
+}
+function addItem(rid){
+  if(isLockedMode) return;
+  const r=(data[currentFloor]||[]).find(r=>r.id===rid);
+  if(!r)return;
+  r.items.push({name:'',qty:1,note:''});
+  if(selectedRoom&&selectedRoom.id===rid)selectedRoom=r;
+  saveData();renderFloor();
+  const container=document.getElementById('items-list');
+  if(container){renderItems(r,container);}
+  else renderPanel();
+  setTimeout(()=>{const ins=document.querySelectorAll('.item-input.name');if(ins.length)ins[ins.length-1].focus();},50);
+}
+function addRoom(){
+  if(isLockedMode) return;
+  const rooms=data[currentFloor]||(data[currentFloor]=[]);
+  const id=currentFloor+'-'+Date.now();
+  rooms.push({id,name:'새 공간',desc:'',photos:[],x:5,y:68,w:35,h:27,items:[]});
+  selectedRoom=rooms[rooms.length-1];
+  saveData();
+  const delBtn = document.getElementById('del-room-btn');
+  if(delBtn) delBtn.style.display='flex';
+  renderFloor();renderPanel();
+}
+function deleteRoom(){
+  if(isLockedMode || !selectedRoom)return;
+  const btn=document.getElementById('del-room-btn');
+  if(!btn) return;
+  if(btn.dataset.confirming==='1'){
+    const id=selectedRoom.id;
+    data[currentFloor]=data[currentFloor].filter(r=>r.id!==id);
+    selectedRoom=null;
+    saveData();
+    btn.dataset.confirming='';
+    btn.innerHTML='🗑️ 공간 삭제';
+    btn.style.background='';btn.style.color='';btn.style.borderColor='';
+    btn.style.display='none';
+    renderFloor();renderPanel();
+  } else {
+    btn.dataset.confirming='1';
+    btn.innerHTML='⚠️ 한번 더';
+    btn.style.background='var(--danger)';btn.style.color='#fff';btn.style.borderColor='var(--danger)';
+    setTimeout(()=>{
+      if(btn.dataset.confirming==='1'){
+        btn.dataset.confirming='';
+        btn.innerHTML='🗑️ 공간 삭제';
+        btn.style.background='';btn.style.color='';btn.style.borderColor='';
+      }
+    },3000);
+  }
+}
+
+function showTab(tab){
+  document.getElementById('view-map').style.display=tab==='map'?'block':'none';
+  document.getElementById('view-list').style.display=tab==='list'?'block':'none';
+  document.getElementById('tab-map').className='tab'+(tab==='map'?' active':'');
+  document.getElementById('tab-list').className='tab'+(tab==='list'?' active':'');
+  if(tab==='list')renderList();
+}
+
+function renderList(){
+  const tbody=document.getElementById('list-tbody');
+  if(!tbody) return;
+  const rows=[];
+  FLOOR_ORDER.forEach(fk=>{
+    (data[fk]||[]).forEach(room=>{
+      if(room.items.length === 0){
+        rows.push({floor:FLOOR_NAMES[fk],room:room.name,desc:room.desc||'',name:'',qty:'',note:''});
       } else {
-        // 잠금 활성화
-        isLockedMode = true;
-        alert("🔒 편집 창고가 잠겼습니다. 안전 모드(조회만 가능)로 전환합니다.");
+        room.items.forEach(item=>{
+          rows.push({floor:FLOOR_NAMES[fk],room:room.name,desc:room.desc||'',name:item.name,qty:item.qty,note:item.note});
+        });
       }
-      updateLockUI();
-      renderFloor();
-    }
+    });
+  });
+  document.getElementById('list-count').textContent=`전체 ${rows.length}개 항목`;
+  document.getElementById('no-data').style.display=rows.length===0?'block':'none';
+  tbody.innerHTML=rows.map(r=>`<tr>
+    <td><span class="floor-chip">${h(r.floor)}</span></td>
+    <td>${h(r.room)}</td>
+    <td class="desc-cell" title="${h(r.desc)}">${h(r.desc)}</td>
+    <td>${h(r.name)}</td>
+    <td class="qty-cell">${r.qty}</td>
+    <td class="note-cell">${h(r.note)}</td>
+  </tr>`).join('');
+}
 
-    function updateLockUI() {
-      const btn = document.getElementById('lock-btn');
-      const statusText = document.getElementById('save-status');
-      const guideText = document.getElementById('canvas-mode-guide');
-
-      if (isLockedMode) {
-        btn.innerText = "🔒 편집 잠금";
-        btn.className = "btn btn-lock";
-        statusText.innerText = "👀 조회 모드";
-        statusText.style.background = "#f1f2f6";
-        guideText.innerText = "— 🔒 현재 조회 모드입니다. (수정하려면 잠금을 해제하세요)";
+function exportExcel(){
+  const rows=[['층','장소','공간 설명','물품','개수','비고']];
+  FLOOR_ORDER.forEach(fk=>{
+    (data[fk]||[]).forEach(room=>{
+      if(room.items.length === 0){
+        rows.push([FLOOR_NAMES[fk],room.name,room.desc||'','','','']);
       } else {
-        btn.innerText = "🔓 편집 중...";
-        btn.className = "btn btn-unlock";
-        statusText.innerText = "🛠️ 편집 모드";
-        statusText.style.background = "#e3faf2";
-        guideText.innerText = "— 🛠️ 드래그하여 배치 수정 가능 (Ctrl+드래그시 복사)";
+        room.items.forEach(item=>{
+          rows.push([FLOOR_NAMES[fk],room.name,room.desc||'',item.name,item.qty,item.note||'']);
+        });
       }
-    }
+    });
+  });
+  if(rows.length<=1){alert('등록된 비품이 없어요.');return;}
+  const ws=XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols']=[{wch:12},{wch:16},{wch:24},{wch:16},{wch:8},{wch:18}];
+  const headerRange=XLSX.utils.decode_range(ws['!ref']);
+  for(let c=headerRange.s.c;c<=headerRange.e.c;c++){
+    const addr=XLSX.utils.encode_cell({r:0,c});
+    if(!ws[addr])continue;
+    ws[addr].s={font:{bold:true},fill:{fgColor:{rgb:'534AB7'}},alignment:{horizontal:'center'}};
+  }
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'비품목록');
+  XLSX.writeFile(wb,'비품목록.xlsx');
+}
 
-    function switchFloor(val) {
-      currentFloor = val;
-      selectedRoom = null;
-      document.getElementById('detail-panel').style.display = 'none';
-      renderFloor();
-    }
+document.getElementById('floor-canvas').addEventListener('mousedown', function(e) {
+  if (e.target === this || e.target.classList.contains('canvas-grid')) {
+    selectRoom(null);
+  }
+});
 
-    // 📷 사진 삭제 규칙 (🛡️ 실수 방지 안전 자물쇠 매립)
-    function removeRoomPhoto(id, idx) {
-      if(isLockedMode) return;
-      
-      if (!confirm("📷 이 공간 사진을 정말로 삭제하시겠습니까?")) {
-        return; // 취소 누르면 동작 중단
-      }
-
-      const r = (data[currentFloor] || []).find(r => r.id === id);
-      if(r && r.photos){
-        r.photos.splice(idx, 1);
-        if(selectedRoom && selectedRoom.id === id) selectedRoom.photos = r.photos;
-        saveData(); 
-        // 패널 리렌더링 함수 연동 (생략 처리 대체)
-      }
-    }
-
-    // 🗑️ 비품 삭제 규칙 (🛡️ 실수 방지 안전 자물쇠 매립)
-    function removeItem(rid, idx){
-      if(isLockedMode) return;
-      const r = (data[currentFloor] || []).find(r => r.id === rid);
-      if(!r) return;
-
-      if (!confirm("🗑️ 이 비품 항목을 정말로 삭제하시겠습니까?")) {
-        return; // 취소 누르면 동작 중단
-      }
-
-      r.items.splice(idx, 1);
-      if(selectedRoom && selectedRoom.id === rid) selectedRoom = r;
-      saveData(); 
-      renderFloor();
-      // 상세 테이블 목록 갱신 구문 연동 영역
-    }
-
-    // 임시 시뮬레이션용 데이터 저장소 통신 함수
-    function saveData() {
-      const statusText = document.getElementById('save-status');
-      statusText.innerText = "🔄 저장 중...";
-      statusText.style.background = "#fff9db";
-
-      setTimeout(() => {
-        statusText.innerText = "✅ 자동저장";
-        statusText.style.background = "#e3faf2";
-      }, 800);
-    }
-
-    // 드래그 및 리사이즈 스켈레톤 함수 정의 (기능 작동용 최소화 구조)
-    function initDrag(e, r) { /* 드래그 구현부 */ }
-    function initResize(e, r) { /* 리사이즈 구현부 */ }
-    function selectRoom(r) { selectedRoom = r; renderFloor(); document.getElementById('detail-panel').style.display = 'block'; }
-    function addRoom() { if(isLockedMode) return; /* 추가 로직 */ saveData(); }
-    function deleteRoom() { if(isLockedMode) return; /* 삭제 로직 */ saveData(); }
-  </script>
+loadData();
+</script>
 </body>
 </html>
