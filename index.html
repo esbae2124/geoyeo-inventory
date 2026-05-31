@@ -881,6 +881,12 @@ function removeItem(rid,idx){
   if(isLockedMode) return;
   const r=(data[currentFloor]||[]).find(r=>r.id===rid);
   if(!r)return;
+
+  // 🔒 비품 실수 삭제 방지용 팝업창 규칙 추가!
+  if (!confirm("🗑️ 이 비품 항목을 정말로 삭제하시겠습니까?")) {
+    return; // [취소]를 누르면 삭제를 중단하고 그냥 빠져나갑니다.
+  }
+  
   r.items.splice(idx,1);
   if(selectedRoom&&selectedRoom.id===rid)selectedRoom=r;
   saveData();renderFloor();
