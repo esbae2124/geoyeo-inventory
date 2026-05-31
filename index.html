@@ -140,37 +140,25 @@ body.is-locked .photo-input-group, body.is-locked .add-item-btn, body.is-locked 
 .modal-index {position:absolute;bottom:24px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.7);font-size:12px;font-weight:500;background:rgba(0,0,0,0.5);padding:4px 12px;border-radius:12px;z-index:2050}
 .modal-zoom-hint {position:absolute;top:24px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.5);font-size:11px;z-index:2050;background:rgba(255,255,255,0.08);padding:3px 10px;border-radius:6px;pointer-events:none}
 
-/* 📐 회색 제목 글자와 보라색 박스 라인을 100% 일치시키는 정밀 정렬 규칙 */
-
+/* 📦 비품 목록 상단 제목 - 진한 음영 박스 디자인 및 칼정렬 규칙 */
 .items-header {
   display: flex;
-  font-size: 11px;
-  color: var(--text3);
-  padding: 0;         /* 💡 패딩을 제거하여 아래 row와 완벽히 시작점을 맞춥니다 */
-  margin-bottom: 6px;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px; /* 아래 입력창들과의 간격 */
   width: 100%;
+  background: var(--surface2);    /* 💡 기존보다 더 진하고 차분한 음영 배경색 */
+  border: 1px solid var(--border2); /* 테두리선도 조금 더 선명하게 고정 */
+  border-radius: 6px;
+  padding: 5px 6px;               /* 💡 아래 입력창(.item-input)과 완벽히 일치하는 패딩 */
+  box-sizing: border-box !important;
 }
 
-/* 🌟 중요: 아래 .item-row의 gap(6px) 때문에 생기는 오차를 보정하기 위해 똑같이 안쪽 여백 적용 */
-.items-header .ih-name { 
-  flex: 4.5 !important; 
-  text-align: left; 
-  padding-left: 6px;  /* 👈 물품명 박스의 테두리와 글자 시작 라인을 일치시킴 */
-}
-.items-header .ih-num { 
-  flex: 1.5 !important; 
-  text-align: left; 
-  padding-left: 12px; /* 👈 개수 박스 테두리와 글자 시작 라인을 일치시킴 */
-} 
-.items-header .ih-note { 
-  flex: 2.8 !important; 
-  text-align: left; 
-  padding-left: 12px; /* 👈 비고 박스 테두리와 글자 시작 라인을 일치시킴 */
-}
-.items-header .ih-del { 
-  flex: 1.2 !important; 
-  text-align: center; 
-}
+/* 제목 글자들도 아래 인풋창들과 정확한 수직선상에 서도록 flex 비율을 쌍둥이처럼 매칭 */
+.items-header .ih-name { flex: 4.5 !important; font-weight: 600; color: var(--text); text-align: left; }
+.items-header .ih-num  { flex: 1.5 !important; font-weight: 600; color: var(--text); text-align: left; } 
+.items-header .ih-note { flex: 2.8 !important; font-weight: 600; color: var(--text); text-align: left; }
+.items-header .ih-del  { flex: 1.2 !important; text-align: center; }
 
 .item-row {
   display: flex;
@@ -192,6 +180,7 @@ body.is-locked .photo-input-group, body.is-locked .add-item-btn, body.is-locked 
 }
 .item-input:focus { border-color: var(--accent); }
 
+/* 입력창 flex 비율 규칙 */
 .item-input.name { flex: 4.5 !important; text-align: left; }
 .item-input.num  { flex: 1.5 !important; text-align: left; } 
 .item-input.note { flex: 2.8 !important; text-align: left; }
@@ -662,7 +651,8 @@ function renderPanel(){
   body.appendChild(sl2);
 
   const ihdr=document.createElement('div');ihdr.className='items-header';
-  ihdr.innerHTML='<span class="ih-name">물품명</span><span class="ih-num">개수</span><span class="ih-note">비고</span><span class="ih-del"></span>';
+  // 맨 우측 빈칸이었던 ih-del 안에 '정렬'이라는 가이드 글자를 넣어 음영 박스의 대칭을 완벽히 맞춥니다.
+ihdr.innerHTML='<span class="ih-name">물품명</span><span class="ih-num">개수</span><span class="ih-note">비고</span><span class="ih-del" style="font-size:10px; color:var(--text3);">정렬</span>';
   body.appendChild(ihdr);
 
   const itemsList=document.createElement('div');itemsList.id='items-list';
