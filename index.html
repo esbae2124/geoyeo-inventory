@@ -330,7 +330,7 @@ function toggleLockMode() {
       document.body.classList.remove('is-locked');
       document.getElementById('lock-toggle-btn').className = "btn success";
       document.getElementById('lock-toggle-btn').innerHTML = "🔓 편집 중...";
-      document.getElementById('canvas-hint').textContent = "— 드래그하여 배치 수정 가능 (Ctrl+드래그시 복사)";
+      document.getElementById('canvas-hint').textContent = "— 배치 수정 가능";
       document.getElementById('add-room-btn').style.display = "inline-block";
       if (selectedRoom) document.getElementById('del-room-btn').style.display = "flex";
       alert("✅ 인증되었습니다. 이제 자유롭게 수정할 수 있습니다.");
