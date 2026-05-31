@@ -298,7 +298,7 @@ tbody tr:hover td{background:var(--bg)}
 const API_URL = "https://script.google.com/macros/s/AKfycbzQNEwgS_QGHWpcuE_4LEPaB8gEb0USTHL6kyF5K6taCUl_3l9Ot4CiMf06avd19SoBxQ/exec";
 
 // ★ [보안 규칙] 관리자용 전용 암호 키값 지정 ★
-const ADMIN_PASSWORD = "geoyeo1234"; 
+const ADMIN_PASSWORD = "2124"; 
 let isLockedMode = true; // 최초 상태는 읽기 전용 모드
 
 const FLOOR_NAMES={F0:'마당(주차장)',B1:'지하 1층',F1:'지상 1층',F2:'지상 2층',F3:'지상 3층'};
@@ -765,6 +765,12 @@ function addRoomPhoto(id, url) {
 }
 function removeRoomPhoto(id, idx) {
   if(isLockedMode) return;
+  
+  // 🔒 실수 방지용 팝업창 규칙 추가!
+  if (!confirm("📷 이 공간 사진을 정말로 삭제하시겠습니까?")) {
+    return; // [취소]를 누르면 삭제를 안 하고 그냥 도망칩니다.
+  }
+
   const r=(data[currentFloor]||[]).find(r=>r.id===id);
   if(r && r.photos){
     r.photos.splice(idx, 1);
