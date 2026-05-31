@@ -140,66 +140,20 @@ body.is-locked .photo-input-group, body.is-locked .add-item-btn, body.is-locked 
 .modal-index {position:absolute;bottom:24px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.7);font-size:12px;font-weight:500;background:rgba(0,0,0,0.5);padding:4px 12px;border-radius:12px;z-index:2050}
 .modal-zoom-hint {position:absolute;top:24px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.5);font-size:11px;z-index:2050;background:rgba(255,255,255,0.08);padding:3px 10px;border-radius:6px;pointer-events:none}
 
-/* 📦 비품 목록 상단 제목 - 진한 음영 박스 디자인 및 칼정렬 규칙 */
-.items-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 8px; /* 아래 입력창들과의 간격 */
-  width: 100%;
-  background: var(--surface2);    /* 💡 기존보다 더 진하고 차분한 음영 배경색 */
-  border: 1px solid var(--border2); /* 테두리선도 조금 더 선명하게 고정 */
-  border-radius: 6px;
-  padding: 5px 6px;               /* 💡 아래 입력창(.item-input)과 완벽히 일치하는 패딩 */
-  box-sizing: border-box !important;
-}
+/* 🌟 [수정 포인트 1] 불필요해진 복잡한 구형 헤더 스타일은 완전히 숨김 처리 */
+.items-header{display:none !important}
 
-/* 제목 글자들도 아래 인풋창들과 정확한 수직선상에 서도록 flex 비율을 쌍둥이처럼 매칭 */
-.items-header .ih-name { flex: 4.5 !important; font-weight: 600; color: var(--text); text-align: left; }
-.items-header .ih-num  { flex: 1.5 !important; font-weight: 600; color: var(--text); text-align: left; } 
-.items-header .ih-note { flex: 2.8 !important; font-weight: 600; color: var(--text); text-align: left; }
-.items-header .ih-del  { flex: 1.2 !important; text-align: center; }
+.item-row{display:flex;align-items:center;gap:4px;margin-bottom:6px;width:100%}
+.item-input{font-size:12px;padding:5px 4px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);outline:none;min-width:0}
+.item-input:focus{border-color:var(--accent)}
 
-.item-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 8px;
-  width: 100%;
-}
-.item-input {
-  font-size: 12px;
-  padding: 5px 6px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg);
-  color: var(--text);
-  outline: none;
-  min-width: 0;
-  box-sizing: border-box !important;
-}
-.item-input:focus { border-color: var(--accent); }
+/* 아래 비품 입력 박스들의 조화로운 가로폭 균형 맞춤 */
+.item-input.name{flex: 4.5}
+.item-input.num{width: 44px; text-align:center; padding:5px 1px}
+.item-input.note{flex: 3.5}
 
-/* 입력창 flex 비율 규칙 */
-.item-input.name { flex: 4.5 !important; text-align: left; }
-.item-input.num  { flex: 1.5 !important; text-align: left; } 
-.item-input.note { flex: 2.8 !important; text-align: left; }
-
-.del-btn {
-  flex: 1.2 !important;
-  height: 26px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-  flex-shrink: 0;
-  padding: 0;
-  font-size: 12px;
-}
-.del-btn:hover { background: var(--danger-light); box-shadow: 0 0 0 1px #F7C1C1; }
+.del-btn{width:26px;height:26px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;padding:0;font-size:12px}
+.del-btn:hover{background:var(--danger-light);box-shadow: 0 0 0 1px #F7C1C1}
 
 .add-item-btn{width:100%;padding:7px;font-size:12px;color:var(--accent);background:none;border:1px dashed var(--accent-mid);border-radius:6px;cursor:pointer;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:4px}
 .add-item-btn:hover{background:var(--accent-light)}
@@ -294,7 +248,7 @@ tbody tr:hover td{background:var(--bg)}
       <div class="panel-card" id="side-panel">
         <div class="panel-header">
           <span style="font-size:13px">📦</span>
-          <span class="panel-header-title">비품 목록</span>
+          <span class="panel-header-title">비품 목록 (물품명 / 개수 / 비고)</span>
         </div>
         <div class="panel-body">
           <div class="empty-state">
@@ -583,7 +537,7 @@ function renderPanel(){
   if(!selectedRoom){
     panel.innerHTML='';
     const hdr=document.createElement('div');hdr.className='panel-header';
-    hdr.innerHTML='<span>📦</span><span class="panel-header-title">비품 목록</span>';
+    hdr.innerHTML='<span>📦</span><span class="panel-header-title">비품 목록 (물품명 / 개수 / 비고)</span>';
     const body=document.createElement('div');body.className='panel-body';
     body.innerHTML='<div class="empty-state"><p>👇<br><br>공간을 클릭하면<br>비품 목록이 표시돼요</p></div>';
     panel.appendChild(hdr);panel.appendChild(body);
@@ -647,14 +601,11 @@ function renderPanel(){
 
   const div=document.createElement('hr');div.className='divider';body.appendChild(div);
 
-  const sl2=document.createElement('div');sl2.className='section-label';sl2.textContent='비품 목록';
+  // 🌟 [수정 포인트 3] 공간 선택 후 노출되는 소제목 텍스트도 통합 변경
+  const sl2=document.createElement('div');sl2.className='section-label';sl2.textContent='비품 목록 (물품명 / 개수 / 비고)';
   body.appendChild(sl2);
 
-  const ihdr=document.createElement('div');ihdr.className='items-header';
-  // 맨 우측 빈칸이었던 ih-del 안에 '정렬'이라는 가이드 글자를 넣어 음영 박스의 대칭을 완벽히 맞춥니다.
-ihdr.innerHTML='<span class="ih-name">물품명</span><span class="ih-num">개수</span><span class="ih-note">비고</span><span class="ih-del" style="font-size:10px; color:var(--text3);">정렬</span>';
-  body.appendChild(ihdr);
-
+  // 🌟 [수정 포인트 4] 불필요해진 복잡한 구형 헤더 생성 및 추가 구문 완벽 제거 (클린패치)
   const itemsList=document.createElement('div');itemsList.id='items-list';
   body.appendChild(itemsList);
   renderItems(r, itemsList);
@@ -680,7 +631,7 @@ function renderItems(r, container){
     numIn.addEventListener('change',()=>updateItem(r.id,i,'qty',numIn.value));
 
     const noteIn=document.createElement('input');
-    noteIn.className='item-input note';noteIn.type='text';noteIn.value=item.note;noteIn.placeholder='비고';
+    noteIn.className='item-input note';noteIn.type='text';noteIn.value=item.note;placeholder='비고';
     if(isLockedMode) noteIn.disabled = true;
     noteIn.addEventListener('change',()=>updateItem(r.id,i,'note',noteIn.value));
 
@@ -738,7 +689,7 @@ function closePhotoModal() { const modal = document.getElementById('photo-modal'
 function moveModalPhoto(dir) {
   modalCurrentIdx += dir;
   if(modalCurrentIdx >= modalPhotos.length) modalCurrentIdx = 0;
-  if(modalCurrentIdx < 0) modalCurrentIdx = modalPhotos.length - 1;
+  if(modalCurrentIdx < 0) modalPhotos.length - 1;
   imgScale = 1; imgPanX = 0; imgPanY = 0;updateModalPhotoView();
 }
 
