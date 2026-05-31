@@ -140,23 +140,37 @@ body.is-locked .photo-input-group, body.is-locked .add-item-btn, body.is-locked 
 .modal-index {position:absolute;bottom:24px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.7);font-size:12px;font-weight:500;background:rgba(0,0,0,0.5);padding:4px 12px;border-radius:12px;z-index:2050}
 .modal-zoom-hint {position:absolute;top:24px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.5);font-size:11px;z-index:2050;background:rgba(255,255,255,0.08);padding:3px 10px;border-radius:6px;pointer-events:none}
 
-/* 📊 비품 헤더와 입력창 전체 좌측 정렬 및 수직 일치 규칙 */
+/* 📐 회색 제목 글자와 보라색 박스 라인을 100% 일치시키는 정밀 정렬 규칙 */
 
 .items-header {
   display: flex;
   font-size: 11px;
   color: var(--text3);
-  padding: 0 6px;   /* 💡 입력창 박스 내부 여백과 일치하도록 헤더 패딩 조정 */
+  padding: 0;         /* 💡 패딩을 제거하여 아래 row와 완벽히 시작점을 맞춥니다 */
   margin-bottom: 6px;
-  gap: 6px;
-  align-items: center;
   width: 100%;
 }
-/* width 대신 flex 비율로 공간 분할 (물품명 4.5 : 개수 1.5 : 비고 2.8 : 삭제 1.2) */
-.items-header .ih-name { flex: 4.5 !important; text-align: left; }
-.items-header .ih-num  { flex: 1.5 !important; text-align: left; } /* 👈 개수 제목도 좌측 정렬! */
-.items-header .ih-note { flex: 2.8 !important; text-align: left; }
-.items-header .ih-del  { flex: 1.2 !important; text-align: center; }
+
+/* 🌟 중요: 아래 .item-row의 gap(6px) 때문에 생기는 오차를 보정하기 위해 똑같이 안쪽 여백 적용 */
+.items-header .ih-name { 
+  flex: 4.5 !important; 
+  text-align: left; 
+  padding-left: 6px;  /* 👈 물품명 박스의 테두리와 글자 시작 라인을 일치시킴 */
+}
+.items-header .ih-num { 
+  flex: 1.5 !important; 
+  text-align: left; 
+  padding-left: 12px; /* 👈 개수 박스 테두리와 글자 시작 라인을 일치시킴 */
+} 
+.items-header .ih-note { 
+  flex: 2.8 !important; 
+  text-align: left; 
+  padding-left: 12px; /* 👈 비고 박스 테두리와 글자 시작 라인을 일치시킴 */
+}
+.items-header .ih-del { 
+  flex: 1.2 !important; 
+  text-align: center; 
+}
 
 .item-row {
   display: flex;
@@ -167,7 +181,7 @@ body.is-locked .photo-input-group, body.is-locked .add-item-btn, body.is-locked 
 }
 .item-input {
   font-size: 12px;
-  padding: 5px 6px; /* 💡 좌측 패딩 6px 고정 */
+  padding: 5px 6px;
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--bg);
@@ -178,9 +192,8 @@ body.is-locked .photo-input-group, body.is-locked .add-item-btn, body.is-locked 
 }
 .item-input:focus { border-color: var(--accent); }
 
-/* 🌟 입력창 flex 비율을 상단 헤더와 100% 똑같이 매칭 */
 .item-input.name { flex: 4.5 !important; text-align: left; }
-.item-input.num  { flex: 1.5 !important; text-align: left; } /* 👈 개수 입력창도 똑같이 좌측 정렬! */
+.item-input.num  { flex: 1.5 !important; text-align: left; } 
 .item-input.note { flex: 2.8 !important; text-align: left; }
 
 .del-btn {
